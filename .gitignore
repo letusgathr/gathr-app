@@ -1,0 +1,6 @@
+# Environment & Logs
+*.log
+scratch*
+.system_generated/
+Thumbs.db
+.DS_Store
