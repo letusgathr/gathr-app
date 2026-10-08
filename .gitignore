@@ -4,3 +4,6 @@ scratch*
 .system_generated/
 Thumbs.db
 .DS_Store
+*.db
+__pycache__/
+*.pyc
