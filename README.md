@@ -447,3 +447,25 @@ Prefer fewer deployables at launch. The scanner can be a route/app mode within t
 8. How are the PRD's activation, commission, and active-event targets defined and measured?
 
 Resolve these decisions with the product owner and pilot organizers before building provider-dependent or financially regulated features.
+
+
+3. Outstanding Features to Make GATHR Marketable & Dominant
+To outcompete Eventbrite, Luma, Dice, and Tix.africa, GATHR should introduce these high-leverage features:
+
+"WhatsApp-First" Native Experience (Emerging Market Differentiator)
+Deliver tickets and Apple/Google Wallet passes instantly via an automated WhatsApp bot.
+Send pre-event updates (directions, parking, entry reminders) directly through WhatsApp, boosting open rates from ~20% (email) to >95%.
+Dynamic "Anti-Screenshot" Rolling QR Codes
+Rolling TOTP QR codes that regenerate every 15–30 seconds with an animated live timestamp, rendering forwarded screenshots useless to fraudsters.
+"Gathr Radar": Intent-Based Micro-Networking
+“Most event apps end at check-in; GATHR begins at check-in.”
+Attendees specify what they do and who they want to meet; 24 hours prior, GATHR suggests 3 curated connections and an AI-generated icebreaker.
+Squad Passes & Social Proof Guest Lists
+Let one attendee reserve a block of tickets (e.g., table or group of 5) and share individual split-payment links with friends.
+Optional opt-in public attendee cards ("See who's going") to drive organic social FOMO.
+Automated Multi-Party Split Payouts
+Allow organizers to assign split percentages (e.g., 70% Organizer, 20% Venue, 10% Promoter) that automatically disburse upon payment confirmation.
+Mesh-Synced "Zero-Drop" Gate Scanner PWA
+A camera-based PWA scanner with pre-cached encrypted ticket credentials and local Wi-Fi peer-to-peer sync, guaranteeing instant sub-0.5s check-in even when cellular networks fail at crowded venue doors.
+Organizer AI Co-Pilot
+Paste brief bullet points or an audio note to auto-generate event copy, ticket tiers, FAQs, and marketing announcements.
