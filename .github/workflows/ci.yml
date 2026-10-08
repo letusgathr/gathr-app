@@ -1,0 +1,41 @@
+name: GATHR CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Backend API & Database Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Initialize Database
+        run: |
+          python db/database.py
+
+      - name: Start API Server
+        run: |
+          python api_server.py &
+          sleep 3
+
+      - name: Run Automated API Tests
+        run: |
+          python -m unittest tests/test_api.py
+
+      - name: Validate Assets and Manifest
+        run: |
+          test -f index.html
+          test -f assets/manifest.json
+          test -f service-worker.js
+          test -f db/schema.sql
