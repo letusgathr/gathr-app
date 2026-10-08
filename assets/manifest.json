@@ -1,0 +1,16 @@
+{
+  "name": "GATHR — Event Infrastructure & Ticketing",
+  "short_name": "GATHR",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090A0F",
+  "theme_color": "#FF5500",
+  "description": "Powering seamless access to events. All-in-one ticketing, gate check-in, and organizer platform.",
+  "icons": [
+    {
+      "src": "./assets/images/logo.png",
+      "sizes": "1254x1254",
+      "type": "image/png"
+    }
+  ]
+}

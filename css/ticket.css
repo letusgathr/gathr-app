@@ -1,0 +1,201 @@
+/* ==========================================================================
+   DYNAMIC LUXURY TICKET PASS & HOLOGRAPHIC SHIMMER
+   ========================================================================== */
+
+.ticket-pass-wrapper {
+  max-width: 480px;
+  margin: 2rem auto;
+  position: relative;
+  perspective: 1000px;
+}
+
+.ticket-pass {
+  background: linear-gradient(145deg, #161A26 0%, #0D0F18 100%);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 85, 0, 0.2);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.4s ease;
+}
+
+/* Holographic dynamic rainbow shimmer line */
+.ticket-pass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 85, 0, 0.12) 48%,
+    rgba(0, 240, 255, 0.15) 52%,
+    rgba(255, 255, 255, 0.05) 60%,
+    transparent 100%
+  );
+  animation: holoShimmer 7s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes holoShimmer {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(50%); }
+}
+
+.ticket-header {
+  padding: 1.75rem 1.75rem 1.25rem;
+  background: linear-gradient(180deg, rgba(255, 85, 0, 0.15) 0%, transparent 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+  position: relative;
+}
+
+/* Notch cutouts for ticket stub feel */
+.ticket-notch-left, .ticket-notch-right {
+  position: absolute;
+  bottom: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-darkest);
+  z-index: 5;
+}
+.ticket-notch-left { left: -14px; }
+.ticket-notch-right { right: -14px; }
+
+.ticket-brand-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ticket-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+}
+
+.ticket-tier-badge {
+  background: linear-gradient(135deg, var(--brand-orange) 0%, var(--brand-amber) 100%);
+  color: #000000;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 0 15px rgba(255, 85, 0, 0.4);
+}
+
+.ticket-body {
+  padding: 1.75rem;
+}
+
+.ticket-event-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.ticket-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ticket-meta-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-meta-label {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.2rem;
+}
+
+.ticket-meta-val {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+/* Rolling Dynamic QR Code Box */
+.ticket-qr-container {
+  background: #FFFFFF;
+  padding: 1.5rem;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem auto 0.75rem;
+  max-width: 260px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.ticket-qr-svg {
+  width: 190px;
+  height: 190px;
+}
+
+/* Rolling QR Active Indicator */
+.rolling-qr-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: #07080B;
+  background: #ECEFF4;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+}
+
+.totp-countdown-circle {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #FF5500;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spinRing 20s linear infinite;
+}
+
+@keyframes spinRing {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.ticket-security-notice {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--brand-orange-light);
+  font-weight: 600;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.ticket-actions-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
