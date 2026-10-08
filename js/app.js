@@ -84,6 +84,11 @@ class GathrApp {
     if (viewName === 'ticket') {
       this.renderUserTicket();
     }
+
+    if (viewName === 'radar' && window.gathrRadar) {
+      window.gathrRadar.renderRadarMatches();
+      window.gathrRadar.renderSquadPass();
+    }
   }
 
   // Render Event Cards Grid
