@@ -89,6 +89,10 @@ class GathrApp {
       window.gathrRadar.renderRadarMatches();
       window.gathrRadar.renderSquadPass();
     }
+
+    if (viewName === 'admin' && window.gathrAdmin) {
+      window.gathrAdmin.renderAdminOverview();
+    }
   }
 
   // Render Event Cards Grid
