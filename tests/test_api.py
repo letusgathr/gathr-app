@@ -251,6 +251,17 @@ class TestGathrAPI(unittest.TestCase):
             self.assertEqual(data['status'], 'success')
             self.assertGreaterEqual(len(data['webhooks']), 1)
 
+    def test_11_health_check_endpoint(self):
+        """Verify cloud deployment health check probe returns status healthy"""
+        req = urllib.request.Request(f"{BASE_URL}/health")
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'healthy')
+            self.assertEqual(data['service'], 'GATHR Event Infrastructure OS')
+            self.assertEqual(data['version'], '1.0.0')
+
 if __name__ == '__main__':
     unittest.main()
+
 

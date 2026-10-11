@@ -469,3 +469,35 @@ Mesh-Synced "Zero-Drop" Gate Scanner PWA
 A camera-based PWA scanner with pre-cached encrypted ticket credentials and local Wi-Fi peer-to-peer sync, guaranteeing instant sub-0.5s check-in even when cellular networks fail at crowded venue doors.
 Organizer AI Co-Pilot
 Paste brief bullet points or an audio note to auto-generate event copy, ticket tiers, FAQs, and marketing announcements.
+
+---
+
+## Production Cloud Deployment
+
+GATHR is fully configured and ready for 1-click zero-downtime deployment across modern cloud platforms:
+
+### 1. Render (Blueprint Deployment)
+- Connect GitHub repository `https://github.com/letusgathr/gathr-app` to [Render](https://render.com).
+- Render automatically parses [`render.yaml`](./render.yaml) to configure the web service, build commands, and health probes.
+- Configure environment secrets in the Render Dashboard:
+  - `PAYSTACK_SECRET_KEY`: Your secret key from the Paystack Developer Dashboard
+  - `STRIPE_WEBHOOK_SECRET`: Your signing secret from the Stripe Webhooks Dashboard
+
+### 2. Railway Deployment
+- Connect the repository on [Railway](https://railway.app).
+- Railway automatically detects [`railway.json`](./railway.json) and [`Procfile`](./Procfile).
+- Automatic container health probes listen on `/health`.
+
+### 3. Containerized Deployment (Docker / Fly.io / GCP Cloud Run / AWS ECS)
+Build and run the production container locally or on any container cloud:
+```bash
+docker build -t gathr-app .
+docker run -p 3000:3000 -e PORT=3000 gathr-app
+```
+
+### 4. Vercel Serverless Hosting
+- Import the repository on [Vercel](https://vercel.com).
+- API routes and static PWA assets are configured via [`vercel.json`](./vercel.json).
+
+### 5. Automated GitHub Actions CI/CD
+Every pull request or commit to `main` executes the automated pipeline in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml), verifying database migrations, API endpoints, webhooks, and health checks before production promotion.

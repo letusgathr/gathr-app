@@ -1,0 +1,4 @@
+# GATHR Production Dependencies
+# The core REST API server and ticket validation engine utilize the Python 3 standard library.
+# The following dependencies are used for Git synchronization and production tooling:
+dulwich>=0.21.0

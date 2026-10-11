@@ -16,7 +16,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from db.database import get_connection, init_db, record_webhook_and_issue_tickets
 
-PORT = 3000
+PORT = int(os.environ.get('PORT', 3000))
 WEB_ROOT = os.path.dirname(os.path.abspath(__file__))
 PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_gathr_secret_998240')
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', 'whsec_gathr_test_live_key')
@@ -44,6 +44,15 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
+
+        # Health Check
+        if path in ('/health', '/api/v1/health'):
+            return self._send_json(200, {
+                'status': 'healthy',
+                'service': 'GATHR Event Infrastructure OS',
+                'version': '1.0.0',
+                'timestamp': datetime.now().isoformat()
+            })
 
         # API: Get all events
         if path == '/api/v1/events':
