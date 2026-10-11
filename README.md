@@ -500,4 +500,32 @@ docker run -p 3000:3000 -e PORT=3000 gathr-app
 - API routes and static PWA assets are configured via [`vercel.json`](./vercel.json).
 
 ### 5. Automated GitHub Actions CI/CD
-Every pull request or commit to `main` executes the automated pipeline in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml), verifying database migrations, API endpoints, webhooks, and health checks before production promotion.
+Every pull request or commit to `main` executes the automated pipeline in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml), verifying database migrations, API endpoints, webhooks, and health checks before production promotion.
+
+
+How to Launch Live on the Internet (in 2 Minutes)
+Option 1: Render (Recommended for Free HTTPS)
+Go to dashboard.render.com and click New + ➔ Web Service.
+Connect your GitHub repository: letusgathr/gathr-app.
+Render will automatically detect the settings:
+Runtime: Python 3
+Build Command: pip install -r requirements.txt && python db/database.py
+Start Command: python api_server.py
+Add your Environment Secrets (optional):
+PAYSTACK_SECRET_KEY: sk_live_... or test key
+STRIPE_WEBHOOK_SECRET: whsec_...
+Tap Deploy Web Service — in under 60 seconds you will receive your live URL (e.g. https://gathr-app.onrender.com).
+Option 2: Railway
+Go to railway.app and select New Project ➔ Deploy from GitHub repo.
+Select letusgathr/gathr-app. Railway automatically detects 
+
+railway.json
+ and provisions the web service with custom domain support.
+4. Git Synchronization Status
+Remote: https://github.com/letusgathr/gathr-app.git
+Commit: 6e2d551 on branch main
+Working Tree: 100% clean (0 uncommitted files).
+With the production web backend and deployment infrastructure live and verified, would you like to:
+
+Scaffold the React Native / Expo cross-platform mobile app (Phase B)?
+Configure custom domain DNS settings (e.g., letusgather.online or api.letusgather.online)?
