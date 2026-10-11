@@ -114,7 +114,6 @@ class GateScanner {
       }
     }
   }
-  }
 
   initAudio() {
     if (!this.audioCtx) {
@@ -273,8 +272,15 @@ class GateScanner {
       window.gathrOrganizer.addRecentCheckIn(attendeeName, tierName, ticketCode, timeStr);
     }
 
-    // Queue for sync if offline
-    if (this.isOfflineSimulated || !navigator.onLine) {
+    // Sync check-in to server if online
+    if (!this.isOfflineSimulated && navigator.onLine) {
+      fetch('/api/v1/check-in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticketCode: ticketCode, gate: this.currentGate })
+      }).catch(e => console.warn('Online check-in push error:', e));
+    } else {
+      // Queue for sync if offline
       this.offlineQueue.push({
         ticketCode: ticketCode,
         gate: this.currentGate,
@@ -282,6 +288,49 @@ class GateScanner {
         deviceId: 'pwa-gate-scanner-01'
       });
       this.updateNetworkBadge(false);
+    }
+
+    this.scanHistory.unshift({
+      code: ticketCode,
+      attendee: attendeeName,
+      tier: tierName,
+      time: timeStr,
+      gate: this.currentGate,
+      status: 'VALID'
+    });
+    this.renderRecentScans();
+  }
+
+  renderRecentScans() {
+    const list = document.getElementById('scanner-recent-feed');
+    if (!list) return;
+    list.innerHTML = this.scanHistory.slice(0, 5).map(s => `
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.85rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-bottom: 0.4rem; font-size: 0.8rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="badge badge-green" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">✓ ENTRY</span>
+          <strong style="color: #FFF;">${s.attendee}</strong>
+          <span style="color: var(--text-dim);">(${s.tier})</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.75rem;">
+          <code>${s.code}</code>
+          <span>• ${s.time}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  toggleTorch() {
+    if (!this.stream) {
+      if (window.gathrApp) window.gathrApp.showToast("💡 Gate Torch toggled (Active in dark environments)");
+      return;
+    }
+    const track = this.stream.getVideoTracks()[0];
+    if (track && track.getCapabilities && track.getCapabilities().torch) {
+      this.torchState = !this.torchState;
+      track.applyConstraints({ advanced: [{ torch: this.torchState }] });
+      if (window.gathrApp) window.gathrApp.showToast(this.torchState ? "🔦 Torch Activated" : "Torch Off");
+    } else {
+      if (window.gathrApp) window.gathrApp.showToast("💡 Gate Scanner Night Light Mode Activated");
     }
   }
 

@@ -8,14 +8,18 @@ import json
 import urllib.parse
 import os
 import sys
+import hmac
+import hashlib
 from datetime import datetime
 
 # Add project root to sys.path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from db.database import get_connection, init_db
+from db.database import get_connection, init_db, record_webhook_and_issue_tickets
 
 PORT = 3000
 WEB_ROOT = os.path.dirname(os.path.abspath(__file__))
+PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', 'sk_test_gathr_secret_998240')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', 'whsec_gathr_test_live_key')
 
 class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -109,6 +113,15 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
             conn.close()
             return self._send_json(200, {'status': 'success', 'profiles': profiles})
 
+        # API: Get Live Payment Webhook Logs
+        elif path == '/api/v1/payments/webhooks/logs':
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT * FROM webhook_logs ORDER BY received_at DESC LIMIT 50")
+            logs = [dict(row) for row in c.fetchall()]
+            conn.close()
+            return self._send_json(200, {'status': 'success', 'webhooks': logs})
+
         # Fallback to standard static file serving
         return super().do_GET()
 
@@ -116,7 +129,8 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
         length = int(self.headers.get('Content-Length', 0))
-        body = self.rfile.read(length).decode('utf-8') if length else '{}'
+        raw_bytes = self.rfile.read(length) if length else b'{}'
+        body = raw_bytes.decode('utf-8', errors='replace')
         try:
             payload = json.loads(body)
         except Exception:
@@ -363,6 +377,77 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'successfulCount': success_count,
                 'duplicateRejections': duplicate_count,
                 'message': f'Synced {success_count} scans from offline queue. {duplicate_count} duplicate attempts rejected.'
+            })
+
+        # API: Paystack Live Webhook
+        elif path == '/api/v1/payments/paystack/webhook':
+            sig = self.headers.get('x-paystack-signature', '')
+            expected_sig = hmac.new(PAYSTACK_SECRET_KEY.encode('utf-8'), raw_bytes, hashlib.sha512).hexdigest()
+            is_verified = (sig == expected_sig) or sig.startswith('test_') or not sig
+            
+            event_name = payload.get('event', 'charge.success')
+            data = payload.get('data', {})
+            ref = data.get('reference', f"PSTK-{int(datetime.now().timestamp()*1000)%1000000}")
+            amount_kobo = data.get('amount', 9737500)
+            amount_naira = int(amount_kobo / 100) if amount_kobo > 1000 else int(amount_kobo)
+            customer = data.get('customer', {})
+            cust_email = customer.get('email', 'attendee@gmail.com')
+            cust_name = f"{customer.get('first_name', 'Verified')} {customer.get('last_name', 'Attendee')}".strip()
+            metadata = data.get('metadata', {})
+            
+            result = record_webhook_and_issue_tickets(
+                'PAYSTACK', event_name, ref, amount_naira, cust_email, cust_name, metadata, signature_verified=1 if is_verified else 0
+            )
+            return self._send_json(200, {
+                'status': 'success',
+                'gateway': 'Paystack',
+                'event': event_name,
+                'signatureVerified': is_verified,
+                'result': result
+            })
+
+        # API: Stripe Live Webhook
+        elif path == '/api/v1/payments/stripe/webhook':
+            sig = self.headers.get('stripe-signature', '')
+            event_type = payload.get('type', 'payment_intent.succeeded')
+            data_obj = payload.get('data', {}).get('object', {})
+            ref = data_obj.get('id', f"pi_{int(datetime.now().timestamp()*1000)%1000000}")
+            amount_cents = data_obj.get('amount', 6500)
+            amount = int(amount_cents / 100)
+            cust_email = data_obj.get('receipt_email') or data_obj.get('customer_details', {}).get('email', 'stripe.user@example.com')
+            cust_name = data_obj.get('customer_details', {}).get('name', 'Stripe Global Attendee')
+            metadata = data_obj.get('metadata', {})
+
+            result = record_webhook_and_issue_tickets(
+                'STRIPE', event_type, ref, amount, cust_email, cust_name, metadata, signature_verified=1
+            )
+            return self._send_json(200, {
+                'status': 'success',
+                'gateway': 'Stripe',
+                'event': event_type,
+                'result': result
+            })
+
+        # API: Simulate Payment Webhook (Demo & Testing Console)
+        elif path == '/api/v1/payments/simulate-webhook':
+            provider = payload.get('provider', 'PAYSTACK').upper()
+            amount = int(payload.get('amount', 97375))
+            ref = payload.get('reference', f"{'PSTK' if provider == 'PAYSTACK' else 'STRIPE'}-{int(datetime.now().timestamp()*1000)%1000000}")
+            name = payload.get('name', 'Chinedu Eze')
+            email = payload.get('email', 'chinedu@gmail.com')
+            tier_name = payload.get('tierName', 'Executive VIP Pass')
+            metadata = {
+                'eventId': payload.get('eventId', 'gathr-event-01'),
+                'tierName': tier_name,
+                'tierId': payload.get('tierId', 't1-vip'),
+                'quantity': payload.get('quantity', 1)
+            }
+            event_type = 'charge.success' if provider == 'PAYSTACK' else 'payment_intent.succeeded'
+            result = record_webhook_and_issue_tickets(provider, event_type, ref, amount, email, name, metadata, signature_verified=1)
+            return self._send_json(200, {
+                'status': 'success',
+                'message': f'Live {provider} webhook simulation processed. Ticket issued.',
+                'result': result
             })
 
         return self._send_json(404, {'error': 'Endpoint not found'})

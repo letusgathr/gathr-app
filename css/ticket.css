@@ -194,8 +194,58 @@
   gap: 0.4rem;
 }
 
-.ticket-actions-bar {
-  display: flex;
-  gap: 0.75rem;
+.ticket-actions-bar,
+.ticket-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
   margin-top: 1.5rem;
 }
+
+@media (max-width: 480px) {
+  .ticket-actions-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+}
+
+/* Crisp Print Styling for Physical Pass / PDF Generation */
+@media print {
+  body {
+    background: #FFF !important;
+    color: #000 !important;
+  }
+  .navbar,
+  .ticket-actions-grid,
+  .ticket-actions-bar,
+  .toast-container,
+  .ticket-security-notice,
+  button {
+    display: none !important;
+  }
+  .ticket-pass-wrapper {
+    max-width: 100% !important;
+    margin: 0 !important;
+    perspective: none !important;
+  }
+  .ticket-pass {
+    border: 2px solid #000 !important;
+    box-shadow: none !important;
+    background: #FFF !important;
+    color: #000 !important;
+  }
+  .ticket-event-name,
+  .ticket-meta-val,
+  #pass-venue {
+    color: #000 !important;
+  }
+  .ticket-meta-grid {
+    background: #F3F4F6 !important;
+    border: 1px solid #D1D5DB !important;
+  }
+  .ticket-qr-container {
+    box-shadow: none !important;
+    border: 1px solid #E5E7EB !important;
+  }
+}
+

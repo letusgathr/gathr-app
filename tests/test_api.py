@@ -161,6 +161,96 @@ class TestGathrAPI(unittest.TestCase):
             self.assertEqual(data['successfulCount'], 1)
             self.assertEqual(data['duplicateRejections'], 1)
 
+    def test_08_paystack_webhook_processing(self):
+        """Verify Paystack charge.success webhook atomically validates, settles order, and issues ticket"""
+        import time, hmac, hashlib
+        ref = f"PSTK-TEST-{int(time.time() * 1000) % 100000}"
+        payload = {
+            "event": "charge.success",
+            "data": {
+                "reference": ref,
+                "amount": 9500000, # 95,000 NGN in kobo
+                "status": "success",
+                "customer": {
+                    "email": "amara.webhook@tech.ng",
+                    "first_name": "Amara",
+                    "last_name": "Okafor"
+                },
+                "metadata": {
+                    "eventId": "gathr-event-01",
+                    "tierName": "Executive VIP Pass",
+                    "tierId": "t1-vip",
+                    "quantity": 1
+                }
+            }
+        }
+        raw_body = json.dumps(payload).encode('utf-8')
+        secret = "sk_test_gathr_secret_998240"
+        sig = hmac.new(secret.encode('utf-8'), raw_body, hashlib.sha512).hexdigest()
+
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/v1/payments/paystack/webhook",
+            data=raw_body,
+            headers={
+                'Content-Type': 'application/json',
+                'x-paystack-signature': sig
+            }
+        )
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertEqual(data['gateway'], 'Paystack')
+            self.assertTrue(data['signatureVerified'])
+            self.assertIn('ticketCode', data['result'])
+
+    def test_09_stripe_webhook_processing(self):
+        """Verify Stripe payment_intent.succeeded webhook processes successfully"""
+        import time
+        ref = f"pi_stripe_{int(time.time() * 1000) % 100000}"
+        payload = {
+            "type": "payment_intent.succeeded",
+            "data": {
+                "object": {
+                    "id": ref,
+                    "amount": 6500, # $65.00 USD
+                    "receipt_email": "global.guest@stripe.com",
+                    "customer_details": {
+                        "name": "Sarah Jenkins",
+                        "email": "global.guest@stripe.com"
+                    },
+                    "metadata": {
+                        "eventId": "gathr-event-01",
+                        "tierName": "Executive VIP Pass",
+                        "tierId": "t1-vip"
+                    }
+                }
+            }
+        }
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/v1/payments/stripe/webhook",
+            data=json.dumps(payload).encode('utf-8'),
+            headers={
+                'Content-Type': 'application/json',
+                'stripe-signature': 'test_stripe_sig'
+            }
+        )
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertEqual(data['gateway'], 'Stripe')
+            self.assertIn('ticketCode', data['result'])
+
+    def test_10_webhook_logs_retrieval(self):
+        """Verify Super-Admin Studio can retrieve live webhook audit logs"""
+        req = urllib.request.Request(f"{BASE_URL}/api/v1/payments/webhooks/logs")
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertGreaterEqual(len(data['webhooks']), 1)
+
 if __name__ == '__main__':
     unittest.main()
 

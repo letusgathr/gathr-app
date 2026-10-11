@@ -163,6 +163,20 @@ def init_db():
     )
     """)
 
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS webhook_logs (
+        id TEXT PRIMARY KEY,
+        provider TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        reference TEXT NOT NULL,
+        amount INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        signature_verified INTEGER DEFAULT 1,
+        attendee_email TEXT,
+        received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
     conn.commit()
 
     # Seed if events table is empty
@@ -426,7 +440,89 @@ def seed_data(conn):
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, profiles)
 
+    # Seed Sample Initial Webhook Logs
+    sample_webhooks = [
+        ("whk-01", "PAYSTACK", "charge.success", "PSTK-981023", 97375, "SUCCESS_CONFIRMED", 1, "amara@example.com"),
+        ("whk-02", "STRIPE", "payment_intent.succeeded", "pi_3P00GATHR99", 65000, "SUCCESS_CONFIRMED", 1, "alex.smith@global.io"),
+        ("whk-03", "PAYSTACK", "transfer.success", "TRF-8829104", 16721250, "SETTLEMENT_DISBURSED", 1, "host@lagosinnovates.ng")
+    ]
+
+    c.executemany("""
+    INSERT INTO webhook_logs (id, provider, event_type, reference, amount, status, signature_verified, attendee_email)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, sample_webhooks)
+
     conn.commit()
+
+def record_webhook_and_issue_tickets(provider, event_type, reference, amount, email, name, metadata, signature_verified=1):
+    """
+    Atomically processes payment webhook: deduplicates reference, sets order PAID, issues ticket, and logs webhook.
+    """
+    conn = get_connection()
+    c = conn.cursor()
+    import time
+    
+    # 1. Deduplication check
+    c.execute("SELECT * FROM orders WHERE order_ref = ?", (reference,))
+    existing_order = c.fetchone()
+    
+    event_id = metadata.get('eventId', 'gathr-event-01')
+    tier_name = metadata.get('tierName', 'Executive VIP Pass')
+    tier_type = 'VIP' if 'VIP' in tier_name else 'TKT'
+    ticket_code = f"GTHR-{tier_type}-{int(time.time() * 1000) % 100000}"
+    
+    if existing_order:
+        c.execute("UPDATE orders SET status = 'PAID' WHERE order_ref = ?", (reference,))
+    else:
+        c.execute("""
+        INSERT INTO orders (id, order_ref, event_id, tier_id, attendee_name, attendee_email, quantity, subtotal, fee, total, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PAID')
+        """, (
+            f"ord-{int(time.time() * 1000) % 1000000}",
+            reference,
+            event_id,
+            metadata.get('tierId', 't1-vip'),
+            name,
+            email,
+            int(metadata.get('quantity', 1)),
+            amount,
+            int(amount * 0.025),
+            int(amount * 1.025)
+        ))
+
+    # 2. Issue ticket if not already issued for this ref
+    c.execute("SELECT * FROM tickets WHERE order_ref = ?", (reference,))
+    existing_tkt = c.fetchone()
+    if not existing_tkt:
+        c.execute("""
+        INSERT INTO tickets (id, order_ref, event_id, tier_name, attendee_name, attendee_email, ticket_code, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'ISSUED')
+        """, (
+            f"tkt-{int(time.time() * 1000) % 1000000}",
+            reference,
+            event_id,
+            tier_name,
+            name,
+            email,
+            ticket_code
+        ))
+
+    # 3. Insert Webhook Log
+    whk_id = f"whk-{int(time.time() * 1000) % 1000000}"
+    c.execute("""
+    INSERT INTO webhook_logs (id, provider, event_type, reference, amount, status, signature_verified, attendee_email)
+    VALUES (?, ?, ?, ?, ?, 'SUCCESS_CONFIRMED', ?, ?)
+    """, (whk_id, provider, event_type, reference, amount, signature_verified, email))
+
+    conn.commit()
+    conn.close()
+    return {
+        "webhookId": whk_id,
+        "orderRef": reference,
+        "ticketCode": ticket_code,
+        "attendeeName": name,
+        "status": "SUCCESS_CONFIRMED"
+    }
 
 if __name__ == '__main__':
     # Re-initialize cleanly
