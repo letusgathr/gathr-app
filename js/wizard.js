@@ -117,7 +117,7 @@ class EventWizard {
     }
   }
 
-  publishEvent() {
+  async publishEvent() {
     const newId = `gathr-event-${Date.now()}`;
     const newEvent = {
       id: newId,
@@ -134,6 +134,9 @@ class EventWizard {
       minPrice: this.formData.tierPrice,
       currency: "₦",
       currencyCode: "NGN",
+      hostSplit: this.formData.hostSplit,
+      venueSplit: this.formData.venueSplit,
+      promoterSplit: this.formData.promoterSplit,
       ticketTiers: [
         {
           id: `${newId}-tier-1`,
@@ -151,6 +154,30 @@ class EventWizard {
       }
     };
 
+    try {
+      await fetch('/api/v1/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: this.formData.title,
+          category: this.formData.category,
+          description: this.formData.description,
+          city: this.formData.city,
+          venue: this.formData.venue,
+          date: this.formData.date,
+          time: this.formData.time,
+          tierName: this.formData.tierName,
+          tierPrice: this.formData.tierPrice,
+          tierCapacity: this.formData.tierCapacity,
+          hostSplit: this.formData.hostSplit,
+          venueSplit: this.formData.venueSplit,
+          promoterSplit: this.formData.promoterSplit
+        })
+      });
+    } catch (err) {
+      console.warn("Backend event sync note:", err);
+    }
+
     GATHR_EVENTS.unshift(newEvent);
     if (window.gathrApp) {
       window.gathrApp.events = [...GATHR_EVENTS];
@@ -167,13 +194,18 @@ class EventWizard {
     const modal = document.getElementById('whatsapp-simulator-modal');
     if (!modal) return;
 
+    const qrContainer = document.getElementById('wa-pass-qr-box');
+    if (qrContainer && window.gathrTicketEngine) {
+      qrContainer.innerHTML = gathrTicketEngine.generateQrSvg(`${code}#WA-VERIFIED`);
+    }
+
     document.getElementById('wa-msg-body').innerHTML = `
       Hello <strong>${attendeeName}</strong>! 🎉<br><br>
-      Your access pass for <strong>${eventTitle}</strong> has been confirmed!<br><br>
+      Your access pass for <strong>${eventTitle}</strong> has been confirmed & issued!<br><br>
       📍 <strong>Venue:</strong> Eko Convention Centre, Lagos<br>
-      ⏰ <strong>Time:</strong> Nov 28, 09:00 AM WAT<br>
+      ⏰ <strong>Door Time:</strong> Nov 28, 09:00 AM WAT<br>
       🔑 <strong>Ticket ID:</strong> <code>${code}</code><br><br>
-      <em>Present the dynamic QR code below at Gate 1 VIP for fast-track admission:</em>
+      <em>Present the dynamic QR pass below at Gate 1 VIP for fast-track turnstile entry:</em>
     `;
 
     modal.classList.add('active');
