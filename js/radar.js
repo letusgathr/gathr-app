@@ -4,6 +4,15 @@
 
 class GathrRadar {
   constructor() {
+    this.userProfile = {
+      name: "Chinedu Eze",
+      title: "Co-Founder & CEO",
+      company: "Nexus AI Africa",
+      industry: "Fintech & Developer Tooling",
+      goal: "raising", // 'raising' | 'investing' | 'hiring' | 'b2b'
+      bio: "Building high-throughput payment and infrastructure primitives for African digital economies."
+    };
+
     this.radarMatches = [
       {
         id: "m-01",
@@ -11,8 +20,9 @@ class GathrRadar {
         role: "Partner @ Ventures Platform",
         location: "Lagos / London",
         avatar: "KB",
-        score: "96% Match",
-        intent: "Looking to deploy seed capital into African AI infrastructure & developer tooling.",
+        category: "investor",
+        baseScore: 98,
+        intent: "Looking to deploy seed capital ($250k - $1M) into African AI infrastructure & developer tooling.",
         icebreaker: "Ask Dr. Kemi about Ventures Platform's recent thesis on offline-first agentic infrastructure."
       },
       {
@@ -21,7 +31,8 @@ class GathrRadar {
         role: "Head of AI Engineering @ Mono",
         location: "Lagos, Nigeria",
         avatar: "TA",
-        score: "92% Match",
+        category: "engineer",
+        baseScore: 94,
         intent: "Architecting high-concurrency payment routing and low-latency fraud detection pipelines.",
         icebreaker: "Ask Tariq how Mono handles transaction state machines during intermittent telecom drops."
       },
@@ -31,11 +42,26 @@ class GathrRadar {
         role: "Founder & CEO @ HealthStack",
         location: "Abuja, Nigeria",
         avatar: "FO",
-        score: "88% Match",
-        intent: "Scaling B2B enterprise sales and hiring senior distributed systems engineers.",
+        category: "founder",
+        baseScore: 91,
+        intent: "Scaling B2B enterprise hospital systems and hiring senior distributed systems engineers.",
         icebreaker: "Ask Folake about her experience navigating enterprise compliance and multi-market expansion."
+      },
+      {
+        id: "m-04",
+        name: "Ibrahim Danjuma",
+        role: "VP of Product @ Kuda",
+        location: "Lagos / Cape Town",
+        avatar: "ID",
+        category: "product",
+        baseScore: 89,
+        intent: "Looking to partner with next-gen event platforms for embedded consumer banking and split-pay savings.",
+        icebreaker: "Ask Ibrahim about embedded banking APIs and biometric authentication UX."
       }
     ];
+
+    this.selectedMatchForMeeting = null;
+    this.selectedTimeSlot = "10:45 AM (Coffee Break)";
 
     this.squadPassState = {
       orderId: "SQD-88210",
@@ -51,43 +77,109 @@ class GathrRadar {
     };
   }
 
+  setUserGoal(goalKey) {
+    this.userProfile.goal = goalKey;
+    document.querySelectorAll('.radar-goal-pill').forEach(pill => {
+      pill.classList.toggle('active', pill.dataset.goal === goalKey);
+    });
+    this.renderRadarMatches();
+    if (window.gathrApp) {
+      const goalLabels = {
+        'raising': 'Raising Seed Round',
+        'investing': 'Sourcing Deals to Fund',
+        'hiring': 'Hiring Senior Tech Leaders',
+        'b2b': 'B2B Commercial Partnerships'
+      };
+      window.gathrApp.showToast(`🎯 Intent updated: "${goalLabels[goalKey]}". Match scores recalculated.`);
+    }
+  }
+
+  computeScore(match) {
+    let score = match.baseScore;
+    if (this.userProfile.goal === 'raising' && match.category === 'investor') score = 99;
+    else if (this.userProfile.goal === 'hiring' && match.category === 'engineer') score = 98;
+    else if (this.userProfile.goal === 'investing' && match.category === 'founder') score = 97;
+    else if (this.userProfile.goal === 'b2b' && match.category === 'product') score = 96;
+    return `${score}% Match`;
+  }
+
   renderRadarMatches() {
     const grid = document.getElementById('radar-matches-grid');
     if (!grid) return;
 
-    grid.innerHTML = this.radarMatches.map(m => `
-      <div class="radar-match-card">
-        <div class="radar-match-header">
-          <div class="match-avatar-info">
-            <div class="match-avatar">${m.avatar}</div>
-            <div>
-              <div style="font-weight: 700; font-size: 1.1rem; color: #FFF;">${m.name}</div>
-              <div style="font-size: 0.8rem; color: var(--brand-orange-light);">${m.role}</div>
+    grid.innerHTML = this.radarMatches.map(m => {
+      const matchScore = this.computeScore(m);
+      return `
+        <div class="radar-match-card">
+          <div class="radar-match-header">
+            <div class="match-avatar-info">
+              <div class="match-avatar">${m.avatar}</div>
+              <div>
+                <div style="font-weight: 700; font-size: 1.1rem; color: #FFF;">${m.name}</div>
+                <div style="font-size: 0.8rem; color: var(--brand-orange-light);">${m.role}</div>
+              </div>
             </div>
+            <span class="match-score-badge">${matchScore}</span>
           </div>
-          <span class="match-score-badge">${m.score}</span>
-        </div>
 
-        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-          <strong style="color: var(--text-dim); text-transform: uppercase; font-size: 0.7rem;">Stated Goal:</strong> ${m.intent}
-        </div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            <strong style="color: var(--text-dim); text-transform: uppercase; font-size: 0.7rem;">Stated Goal:</strong> ${m.intent}
+          </div>
 
-        <div class="match-icebreaker-box">
-          <strong style="color: var(--brand-orange); display: block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.2rem;">AI Icebreaker Prompt:</strong>
-          "${m.icebreaker}"
-        </div>
+          <div class="match-icebreaker-box">
+            <strong style="color: var(--brand-orange); display: block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.2rem;">AI Icebreaker Prompt:</strong>
+            "${m.icebreaker}"
+          </div>
 
-        <button class="btn btn-secondary btn-block btn-sm" onclick="gathrRadar.tapConnect('${m.id}', '${m.name}')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-          Exchange Digital Contact Card
-        </button>
-      </div>
-    `).join('');
+          <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+            <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="gathrRadar.tapConnect('${m.id}', '${m.name}')">
+              Swap NFC Badge
+            </button>
+            <button class="btn btn-primary btn-sm" style="flex: 1;" onclick="gathrRadar.openMeetingModal('${m.id}')">
+              Book 1-on-1 Sync
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   tapConnect(matchId, name) {
     if (window.gathrApp) {
       window.gathrApp.showToast(`✨ Digital contact badge exchanged with ${name}! Saved to your GATHR Network.`);
+    }
+  }
+
+  openMeetingModal(matchId) {
+    const match = this.radarMatches.find(m => m.id === matchId);
+    if (!match) return;
+    this.selectedMatchForMeeting = match;
+
+    const modal = document.getElementById('meeting-scheduler-modal');
+    const nameEl = document.getElementById('meeting-modal-attendee-name');
+    const roleEl = document.getElementById('meeting-modal-attendee-role');
+
+    if (nameEl) nameEl.innerText = match.name;
+    if (roleEl) roleEl.innerText = match.role;
+    if (modal) modal.style.display = 'flex';
+  }
+
+  closeMeetingModal() {
+    const modal = document.getElementById('meeting-scheduler-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  selectMeetingSlot(timeStr, btn) {
+    this.selectedTimeSlot = timeStr;
+    document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('selected'));
+    if (btn) btn.classList.add('selected');
+  }
+
+  confirmMeeting() {
+    if (!this.selectedMatchForMeeting) return;
+    this.closeMeetingModal();
+    if (window.gathrApp) {
+      window.gathrApp.showToast(`🤝 1-on-1 meeting confirmed with ${this.selectedMatchForMeeting.name} at ${this.selectedTimeSlot} (VIP Networking Lounge)! Added to your Run of Show.`);
     }
   }
 
@@ -127,3 +219,4 @@ class GathrRadar {
 }
 
 window.gathrRadar = new GathrRadar();
+

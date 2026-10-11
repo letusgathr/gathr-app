@@ -73,6 +73,42 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
             conn.close()
             return self._send_json(200, {'status': 'success', 'attendees': tickets})
 
+        # API: Get Vetted Vendors
+        elif path == '/api/v1/vendors':
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT * FROM vendors ORDER BY rating DESC")
+            vendors = [dict(v) for v in c.fetchall()]
+            conn.close()
+            return self._send_json(200, {'status': 'success', 'vendors': vendors})
+
+        # API: Get Active Vendor RFPs & Escrows
+        elif path == '/api/v1/vendors/rfp':
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT * FROM vendor_rfps ORDER BY created_at DESC")
+            rfps = [dict(r) for r in c.fetchall()]
+            conn.close()
+            return self._send_json(200, {'status': 'success', 'rfps': rfps})
+
+        # API: Get Run of Show Schedule
+        elif path == '/api/v1/planning/run-of-show':
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT * FROM run_of_show ORDER BY id ASC")
+            schedule = [dict(s) for s in c.fetchall()]
+            conn.close()
+            return self._send_json(200, {'status': 'success', 'schedule': schedule})
+
+        # API: Get Radar Networking Profiles
+        elif path == '/api/v1/radar/profiles':
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT * FROM networking_profiles")
+            profiles = [dict(p) for p in c.fetchall()]
+            conn.close()
+            return self._send_json(200, {'status': 'success', 'profiles': profiles})
+
         # Fallback to standard static file serving
         return super().do_GET()
 
@@ -229,6 +265,104 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'attendeeName': tkt['attendee_name'],
                 'tierName': tkt['tier_name'],
                 'checkedInAt': now_time
+            })
+
+        # API: Submit Vendor RFP & Lock Escrow
+        elif path == '/api/v1/vendors/rfp':
+            conn = get_connection()
+            c = conn.cursor()
+            rfp_id = f"rfp-{int(datetime.now().timestamp() * 1000) % 100000}"
+            budget = int(payload.get('budget', 3000000))
+            escrow = int(budget * 0.5) # 50% milestone 1
+            c.execute("""
+            INSERT INTO vendor_rfps (id, event_id, vendor_id, vendor_name, category, budget, scope, status, escrow_amount)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'Escrow Funded (Milestone 1/2)', ?)
+            """, (
+                rfp_id,
+                payload.get('eventId', 'gathr-event-01'),
+                payload.get('vendorId', 'vnd-custom'),
+                payload.get('vendorName', 'Selected Vendor Partner'),
+                payload.get('category', 'Services'),
+                budget,
+                payload.get('scope', 'Standard engagement contract'),
+                escrow
+            ))
+            conn.commit()
+            conn.close()
+            return self._send_json(201, {
+                'status': 'success',
+                'rfpId': rfp_id,
+                'escrowFunded': escrow,
+                'message': f'RFP issued to {payload.get("vendorName")}. Milestone 1 escrow locked.'
+            })
+
+        # API: Add Run of Show Activity
+        elif path == '/api/v1/planning/run-of-show':
+            conn = get_connection()
+            c = conn.cursor()
+            ros_id = f"ros-{int(datetime.now().timestamp() * 1000) % 100000}"
+            c.execute("""
+            INSERT INTO run_of_show (id, event_id, time_slot, activity, stage, lead, tech_cue, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'Scheduled')
+            """, (
+                ros_id,
+                payload.get('eventId', 'gathr-event-01'),
+                payload.get('timeSlot', '11:00 AM - 12:00 PM'),
+                payload.get('activity', 'Special Session'),
+                payload.get('stage', 'Mainstage Arena'),
+                payload.get('lead', 'Session Lead'),
+                payload.get('techCue', 'Standard lighting & mic audio.')
+            ))
+            conn.commit()
+            conn.close()
+            return self._send_json(201, {
+                'status': 'success',
+                'rosId': ros_id,
+                'message': 'Activity added to live event run-of-show.'
+            })
+
+        # API: Offline Gate Scanner Batch Sync
+        elif path == '/api/v1/check-ins/batch-sync':
+            scans = payload.get('scans', [])
+            conn = get_connection()
+            c = conn.cursor()
+            success_count = 0
+            duplicate_count = 0
+
+            for scan in scans:
+                code = scan.get('ticketCode', '')
+                gate = scan.get('gate', 'Gate 1 Offline PWA')
+                scanned_at = scan.get('scannedAt', datetime.now().strftime("%I:%M %p"))
+                device_id = scan.get('deviceId', 'pwa-scanner-01')
+
+                # Check existing status
+                c.execute("SELECT status FROM tickets WHERE ticket_code = ?", (code,))
+                row = c.fetchone()
+                if row and row['status'] == 'CHECKED_IN':
+                    duplicate_count += 1
+                else:
+                    if row:
+                        c.execute("UPDATE tickets SET status = 'CHECKED_IN', checked_in_at = ?, checked_in_gate = ? WHERE ticket_code = ?", (scanned_at, gate, code))
+                    else:
+                        c.execute("""
+                        INSERT INTO tickets (id, order_ref, event_id, tier_name, attendee_name, attendee_email, ticket_code, status, checked_in_at, checked_in_gate)
+                        VALUES (?, 'OFFLINE-SYNC', 'gathr-event-01', 'General Delegate', 'Synced Attendee', 'synced@gathr.ng', ?, 'CHECKED_IN', ?, ?)
+                        """, (f"tkt-sync-{int(datetime.now().timestamp()*1000)%1000000}", code, scanned_at, gate))
+                    
+                    c.execute("""
+                    INSERT INTO offline_sync_logs (id, ticket_code, gate, scanned_at, device_id)
+                    VALUES (?, ?, ?, ?, ?)
+                    """, (f"sync-{int(datetime.now().timestamp()*1000)%1000000}", code, gate, scanned_at, device_id))
+                    success_count += 1
+
+            conn.commit()
+            conn.close()
+            return self._send_json(200, {
+                'status': 'success',
+                'syncedTotal': len(scans),
+                'successfulCount': success_count,
+                'duplicateRejections': duplicate_count,
+                'message': f'Synced {success_count} scans from offline queue. {duplicate_count} duplicate attempts rejected.'
             })
 
         return self._send_json(404, {'error': 'Endpoint not found'})

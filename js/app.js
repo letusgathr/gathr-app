@@ -85,6 +85,16 @@ class GathrApp {
       this.renderUserTicket();
     }
 
+    if (viewName === 'planning' && window.gathrPlanning) {
+      window.gathrPlanning.init();
+    }
+
+    if (viewName === 'organizer' && window.gathrOrganizer) {
+      window.gathrOrganizer.renderMetrics();
+      window.gathrOrganizer.renderAttendeeTable();
+      window.gathrOrganizer.renderPredictiveInsights();
+    }
+
     if (viewName === 'radar' && window.gathrRadar) {
       window.gathrRadar.renderRadarMatches();
       window.gathrRadar.renderSquadPass();

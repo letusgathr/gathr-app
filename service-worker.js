@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gathr-v1-cache';
+const CACHE_NAME = 'gathr-v3-cache';
 const URLS_TO_CACHE = [
   './',
   './index.html',
@@ -7,11 +7,20 @@ const URLS_TO_CACHE = [
   './css/ticket.css',
   './css/scanner.css',
   './css/organizer.css',
+  './css/radar.css',
+  './css/wizard.css',
+  './css/admin.css',
+  './css/planning.css',
   './js/events-data.js',
   './js/ticket-engine.js',
   './js/scanner.js',
   './js/organizer.js',
+  './js/planning.js',
+  './js/radar.js',
+  './js/wizard.js',
+  './js/admin.js',
   './js/app.js',
+  './assets/manifest.json',
   './assets/images/logo.png',
   './assets/images/logo-cinematic.png',
   './assets/images/tech-summit.jpg',

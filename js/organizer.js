@@ -109,6 +109,44 @@ class OrganizerManager {
       window.gathrApp.showToast("Attendee CSV Export downloaded successfully!");
     }
   }
+
+  applyAiDynamicPricing() {
+    const vipTier = this.activeEvent.ticketTiers.find(t => t.id === 't1-vip');
+    if (vipTier) {
+      const oldPrice = vipTier.price;
+      vipTier.price = Math.round(oldPrice * 1.15);
+      if (window.gathrApp) {
+        window.gathrApp.renderEvents();
+        window.gathrApp.showToast(`🚀 Dynamic Pricing Surge Applied: VIP Tier updated from ₦${oldPrice.toLocaleString()} to ₦${vipTier.price.toLocaleString()} (+15%). Projected +₦3.85M GMV.`);
+      }
+      const bannerBtn = document.getElementById('ai-dynamic-pricing-btn');
+      if (bannerBtn) {
+        bannerBtn.innerText = "Surge Active (+15%) ✓";
+        bannerBtn.disabled = true;
+        bannerBtn.style.opacity = "0.7";
+      }
+    }
+  }
+
+  renderPredictiveInsights() {
+    const forecastEl = document.getElementById('org-forecast-attendance');
+    const confidenceEl = document.getElementById('org-forecast-confidence');
+    const hostShareEl = document.getElementById('org-split-host');
+    const venueShareEl = document.getElementById('org-split-venue');
+    const promoterShareEl = document.getElementById('org-split-promoter');
+
+    const gross = this.activeEvent.stats.revenueGross;
+    const netAfterFee = gross * 0.975; // 2.5% platform fee
+    const hostShare = netAfterFee * (this.activeEvent.splits.host / 100);
+    const venueShare = netAfterFee * (this.activeEvent.splits.venue / 100);
+    const promoterShare = netAfterFee * (this.activeEvent.splits.promoter / 100);
+
+    if (forecastEl) forecastEl.innerText = `712 Attendees (~90.7%)`;
+    if (confidenceEl) confidenceEl.innerText = `94% Model Confidence (Weather & Pacing)`;
+    if (hostShareEl) hostShareEl.innerText = `₦${Math.round(hostShare).toLocaleString()}`;
+    if (venueShareEl) venueShareEl.innerText = `₦${Math.round(venueShare).toLocaleString()}`;
+    if (promoterShareEl) promoterShareEl.innerText = `₦${Math.round(promoterShare).toLocaleString()}`;
+  }
 }
 
 window.gathrOrganizer = new OrganizerManager();

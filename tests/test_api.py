@@ -77,7 +77,8 @@ class TestGathrAPI(unittest.TestCase):
 
     def test_04_atomic_check_in_and_duplicate_rejection(self):
         """Verify gate scanner validates ticket once, and immediately rejects duplicate scans with 409"""
-        test_code = "GTHR-VIP-9999"
+        import time
+        test_code = f"GTHR-VIP-TEST-{int(time.time() * 1000) % 100000}"
         payload = {"ticketCode": test_code, "gate": "Gate 1 VIP"}
         
         # 1st Scan: Should succeed
@@ -100,5 +101,66 @@ class TestGathrAPI(unittest.TestCase):
             err_data = json.loads(e.read().decode('utf-8'))
             self.assertEqual(err_data['status'], 'already_used')
 
+    def test_05_get_vendors_and_submit_rfp(self):
+        """Verify vendor directory listing and RFP escrow booking"""
+        req = urllib.request.Request(f"{BASE_URL}/api/v1/vendors")
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertGreaterEqual(len(data['vendors']), 1)
+
+        rfp_payload = {
+            "eventId": "gathr-event-01",
+            "vendorId": "vnd-01",
+            "vendorName": "Pulse Audio-Visual",
+            "category": "Audio/Visual & Lighting",
+            "budget": 4500000,
+            "scope": "Mainstage 4K LED concert screen"
+        }
+        rfp_req = urllib.request.Request(
+            f"{BASE_URL}/api/v1/vendors/rfp",
+            data=json.dumps(rfp_payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+        with urllib.request.urlopen(rfp_req) as resp:
+            self.assertEqual(resp.status, 201)
+            rfp_data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(rfp_data['status'], 'success')
+            self.assertEqual(rfp_data['escrowFunded'], 2250000)
+
+    def test_06_run_of_show_schedule(self):
+        """Verify Run of Show timeline retrieval and activity insertion"""
+        req = urllib.request.Request(f"{BASE_URL}/api/v1/planning/run-of-show")
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertGreaterEqual(len(data['schedule']), 1)
+
+    def test_07_batch_offline_sync(self):
+        """Verify Gate Scanner batch sync validates queue and reports duplicate rejections"""
+        import time
+        unique_sync_code = f"GTHR-SYNC-{int(time.time() * 1000) % 100000}"
+        payload = {
+            "scans": [
+                {"ticketCode": unique_sync_code, "gate": "Gate 1 Offline PWA", "scannedAt": "10:15 AM"},
+                {"ticketCode": "GTHR-VIP-9021", "gate": "Gate 1 Offline PWA", "scannedAt": "10:16 AM"} # Already checked in
+            ]
+        }
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/v1/check-ins/batch-sync",
+            data=json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertEqual(data['syncedTotal'], 2)
+            self.assertEqual(data['successfulCount'], 1)
+            self.assertEqual(data['duplicateRejections'], 1)
+
 if __name__ == '__main__':
     unittest.main()
+

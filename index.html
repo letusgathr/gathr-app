@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="./css/radar.css">
   <link rel="stylesheet" href="./css/wizard.css">
   <link rel="stylesheet" href="./css/admin.css">
+  <link rel="stylesheet" href="./css/planning.css">
 </head>
 <body>
 
@@ -51,6 +52,13 @@
             <button class="nav-btn" data-view="scanner">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3"/><path d="M20 7V4h-3"/><path d="M4 17v3h3"/><path d="M20 17v3h-3"/><rect x="9" y="9" width="6" height="6"/></svg>
               Gate Scanner
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" data-view="planning">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 9h7"/><path d="M14 15h7"/></svg>
+              AI Planning & Sourcing
+              <span class="badge-pill" style="background: linear-gradient(135deg, var(--brand-orange), var(--brand-amber)); color: #000;">Phase 2</span>
             </button>
           </li>
           <li>
@@ -273,15 +281,34 @@
         <!-- HUD Status Bar -->
         <div class="scanner-hud-bar">
           <div class="hud-item">
-            <span class="hud-live-indicator"></span>
-            <span>Online • Mesh Synced</span>
+            <span id="gate-network-status-badge" class="badge-pill" style="background: rgba(0, 230, 118, 0.2); color: var(--accent-green);">
+              <span class="pulse-dot" style="background: var(--accent-green);"></span> Cloud Sync Live
+            </span>
           </div>
           <div class="hud-item">
             <span style="color: var(--text-dim);">Checked In:</span>
             <strong id="hud-scanned-count" style="color: #FFF;">184 / 500</strong>
           </div>
           <div class="hud-item">
-            <span class="badge badge-orange" style="font-size: 0.7rem;">Gate 1 VIP</span>
+            <span id="hud-current-gate-label" class="badge badge-orange" style="font-size: 0.75rem;">Gate 1 (VIP & Fast-Track)</span>
+          </div>
+        </div>
+
+        <!-- Gate Switcher & Offline Controls Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; gap: 0.4rem; align-items: center;">
+            <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Select Door:</span>
+            <button class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;" onclick="gathrGateScanner.switchGate('Gate 1 (VIP & Fast-Track)')">Gate 1 (VIP)</button>
+            <button class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;" onclick="gathrGateScanner.switchGate('Gate 2 (General Entry)')">Gate 2 (General)</button>
+            <button class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;" onclick="gathrGateScanner.switchGate('Gate 3 (Crew & Backstage)')">Gate 3 (Crew)</button>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-outline btn-sm" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;" onclick="gathrGateScanner.toggleOfflineSimulation()">
+              ⚡ Simulate Zero-Cell Signal
+            </button>
+            <button id="gate-sync-queue-btn" class="btn btn-primary btn-sm" style="display: none; padding: 0.25rem 0.75rem; font-size: 0.75rem;" onclick="gathrGateScanner.syncOfflineQueue()">
+              Sync Queued Scans ⚡
+            </button>
           </div>
         </div>
 
@@ -326,6 +353,171 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==========================================
+       VIEW: AI PLANNING & VENDOR MARKETPLACE STUDIO
+       ========================================== -->
+  <main id="view-planning" class="view-panel" style="display: none; padding: 2.5rem 0 6rem;">
+    <div class="app-container">
+      <div class="planning-header-bar">
+        <div>
+          <div class="section-tagline">Phase 2: Event Operating System</div>
+          <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.35rem;">AI Planning & Vendor Sourcing</h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">
+            One singular intelligent layer for event logistics, dynamic budgeting, and vetted vendor escrows.
+          </p>
+        </div>
+
+        <div class="planning-tab-pills">
+          <button class="planning-tab-btn active" data-tab="schedule" onclick="gathrPlanning.switchTab('schedule')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Run-of-Show
+          </button>
+          <button class="planning-tab-btn" data-tab="budget" onclick="gathrPlanning.switchTab('budget')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            AI Budgeting
+          </button>
+          <button class="planning-tab-btn" data-tab="vendors" onclick="gathrPlanning.switchTab('vendors')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Vendor Sourcing
+          </button>
+          <button class="planning-tab-btn" data-tab="rfps" onclick="gathrPlanning.switchTab('rfps')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Escrow RFPs
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Panel 1: Run of Show Timeline -->
+      <div id="planning-panel-schedule">
+        <div class="ai-logistics-banner">
+          <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--brand-orange); font-weight: 700; margin-bottom: 0.25rem;">
+              ⚡ Autonomous Logistics Agent
+            </div>
+            <h3 style="font-size: 1.35rem; font-weight: 800; color: #FFF; margin-bottom: 0.25rem;">
+              Live Operational Run-of-Show & Stage Cues
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">
+              Timeline synchronized with gate check-in pacing, audio cues, and attendee networking coffee intervals.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.65rem;">
+            <button class="btn btn-secondary btn-sm" onclick="gathrPlanning.addCustomRunOfShowItem()">
+              + Add Session
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="gathrPlanning.optimizeTimelineWithAi()">
+              ⚡ Optimize with AI
+            </button>
+          </div>
+        </div>
+
+        <div id="ros-timeline-container" class="ros-timeline"></div>
+      </div>
+
+      <!-- Tab Panel 2: AI Budget Estimator -->
+      <div id="planning-panel-budget" style="display: none;">
+        <div class="budget-grid-wrap">
+          <div class="budget-calculator-card">
+            <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; color: #FFF;">
+              Event Economics & P&L Modeler
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+              Adjust target turnout and ticket tier pricing to dynamically model vendor allocations and net margins.
+            </p>
+
+            <div class="slider-group">
+              <div class="slider-label-row">
+                <span style="color: var(--text-muted);">Target Attendance:</span>
+                <strong id="est-attendee-count-label" style="color: #FFF;">1,500 passes</strong>
+              </div>
+              <input type="range" min="100" max="5000" step="50" value="1500" class="budget-range-input" oninput="gathrPlanning.updateBudgetAttendeeInput(this.value)">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-label-row">
+                <span style="color: var(--text-muted);">Average Ticket Price:</span>
+                <strong id="est-avg-price-label" style="color: var(--brand-orange);">₦35,000</strong>
+              </div>
+              <input type="range" min="5000" max="150000" step="2500" value="35000" class="budget-range-input" oninput="gathrPlanning.updateBudgetPriceInput(this.value)">
+            </div>
+
+            <div style="background: rgba(255,85,0,0.08); border: 1px solid rgba(255,85,0,0.2); border-radius: var(--radius-md); padding: 1rem; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted);">
+              💡 <strong>AI Benchmark:</strong> Based on 48 verified tech summits in Lagos & Nairobi, production expenses average 28% of GMV with standard 4K LED and line-array rigging.
+            </div>
+          </div>
+
+          <div class="budget-breakdown-card">
+            <div>
+              <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--brand-orange); font-weight: 700;">Projected Gross GMV</div>
+              <div id="est-gross-gmv" style="font-size: 2.2rem; font-weight: 900; color: #FFF; margin: 0.25rem 0 1.25rem;">₦52,500,000</div>
+
+              <div class="breakdown-row">
+                <span style="color: var(--text-muted);">Platform Fee (GATHR 2.5%):</span>
+                <span id="est-platform-fee" style="font-weight: 700; color: var(--brand-orange);">₦1,312,500</span>
+              </div>
+              <div class="breakdown-row">
+                <span style="color: var(--text-muted);">Venue Rental (22%):</span>
+                <span id="est-venue-cost" style="font-weight: 600;">₦11,550,000</span>
+              </div>
+              <div class="breakdown-row">
+                <span style="color: var(--text-muted);">Production, Stage & Audio (28%):</span>
+                <span id="est-production-cost" style="font-weight: 600;">₦14,700,000</span>
+              </div>
+              <div class="breakdown-row">
+                <span style="color: var(--text-muted);">VIP Catering & Bar (18%):</span>
+                <span id="est-catering-cost" style="font-weight: 600;">₦9,450,000</span>
+              </div>
+              <div class="breakdown-row">
+                <span style="color: var(--text-muted);">Security & Marshals (6%):</span>
+                <span id="est-security-cost" style="font-weight: 600;">₦3,150,000</span>
+              </div>
+              <div class="breakdown-row">
+                <span style="color: var(--text-muted);">Marketing & Creators (10%):</span>
+                <span id="est-marketing-cost" style="font-weight: 600;">₦5,250,000</span>
+              </div>
+            </div>
+
+            <div class="breakdown-row total-row">
+              <span>Projected Net Profit (Host Share):</span>
+              <span id="est-projected-profit" style="color: var(--accent-green);">₦7,087,500</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Panel 3: Vetted Vendor Sourcing -->
+      <div id="planning-panel-vendors" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="vendor-cat-pill btn btn-secondary btn-sm active" data-cat="all" onclick="gathrPlanning.filterVendors('all')">All Vendors</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="av" onclick="gathrPlanning.filterVendors('av')">Sound & 4K Lighting</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="catering" onclick="gathrPlanning.filterVendors('catering')">Catering & Mixology</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="security" onclick="gathrPlanning.filterVendors('security')">Tactical Security</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="media" onclick="gathrPlanning.filterVendors('media')">4K Broadcast & Drones</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="decor" onclick="gathrPlanning.filterVendors('decor')">Decor & Rigging</button>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--text-dim);">🛡️ 100% Escrow Protected Booking</span>
+        </div>
+
+        <div id="vendor-cards-grid" class="vendor-cards-grid"></div>
+      </div>
+
+      <!-- Tab Panel 4: Active RFPs & Escrow Milestones -->
+      <div id="planning-panel-rfps" style="display: none;">
+        <div style="margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #FFF; margin-bottom: 0.25rem;">
+            Milestone Escrow Contracts
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.875rem;">
+            Funds are held in neutral escrow and only disbursed when organizers sign off on soundcheck and execution milestones.
+          </p>
+        </div>
+
+        <div id="rfps-list-container" style="display: flex; flex-direction: column; gap: 1rem;"></div>
       </div>
     </div>
   </main>
@@ -389,6 +581,55 @@
           </div>
           <div id="org-metric-pacing" class="metric-value">23%</div>
           <div class="metric-trend">Peak pacing expected at 10:00 AM</div>
+        </div>
+      </div>
+
+      <!-- AI Dynamic Pricing & Turnout Intelligence Bar -->
+      <div style="background: linear-gradient(135deg, rgba(255, 85, 0, 0.12) 0%, rgba(13, 15, 24, 0.95) 100%); border: 1px solid rgba(255, 85, 0, 0.3); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--brand-orange); font-weight: 700; margin-bottom: 0.2rem;">
+            ⚡ AI Yield Optimization Engine
+          </div>
+          <div style="font-size: 1.15rem; font-weight: 800; color: #FFF;">
+            Demand Surge Alert: VIP tier velocity +42% above 7-day pacing (only 46 remaining).
+          </div>
+          <div style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Dynamic recommendation: Increase Executive VIP pass from ₦95,000 to ₦109,250 (+15%) to capture estimated +₦3.85M GMV prior to sellout.
+          </div>
+        </div>
+        <button id="ai-dynamic-pricing-btn" class="btn btn-primary btn-sm" onclick="gathrOrganizer.applyAiDynamicPricing()">
+          Apply +15% Surge Pricing
+        </button>
+      </div>
+
+      <!-- Turnout Forecast & Multi-Party Split Ledger -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <span class="metric-card-label">Turnout Predictor (Neural Model)</span>
+            <span class="badge badge-green" style="font-size: 0.7rem;">94% Accuracy</span>
+          </div>
+          <div id="org-forecast-attendance" class="metric-value" style="color: var(--accent-green); font-size: 1.6rem;">712 Attendees (~90.7%)</div>
+          <div id="org-forecast-confidence" class="metric-trend" style="color: var(--text-muted); font-size: 0.75rem;">Factoring Friday evening Lagos Island traffic and historical check-in curves.</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <span class="metric-card-label">Settlement Splits (ACID Ledger)</span>
+            <span class="badge badge-orange" style="font-size: 0.7rem;">Direct Disbursement</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <span style="color: var(--text-muted);">Host Share (70%):</span>
+            <strong id="org-split-host" style="color: #FFF;">₦16,721,250</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <span style="color: var(--text-muted);">Venue Share (20%):</span>
+            <strong id="org-split-venue" style="color: var(--accent-cyan);">₦4,777,500</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.35rem 0;">
+            <span style="color: var(--text-muted);">Promoter Pool (10%):</span>
+            <strong id="org-split-promoter" style="color: var(--accent-green);">₦2,388,750</strong>
+          </div>
         </div>
       </div>
 
@@ -474,17 +715,49 @@
           <div class="radar-sweep-center"></div>
         </div>
 
-        <div style="text-align: center; max-width: 680px; margin: 0 auto;">
+        <div style="text-align: center; max-width: 680px; margin: 0 auto 1.5rem;">
           <div class="section-tagline" style="justify-content: center;">Attendee Intelligence Layer</div>
           <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem;">GATHR Radar</h2>
-          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
-            Most platforms end at check-in. GATHR starts at check-in. Our neural network analyzes attendee intentions and curates 3 high-value connections with personalized icebreakers.
+          <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Most platforms end at check-in. GATHR starts at check-in. Our neural network analyzes attendee intentions and curates high-value connections with personalized icebreakers.
           </p>
+        </div>
 
-          <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle); padding: 0.75rem 1.25rem; border-radius: var(--radius-full); display: inline-flex; align-items: center; gap: 0.75rem;">
-            <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Your Stated Goal:</span>
-            <span style="color: var(--brand-orange-light); font-weight: 600; font-size: 0.85rem;">"Scaling AI infrastructure & meeting Seed stage VCs"</span>
-            <button class="btn btn-secondary btn-sm" style="padding: 0.2rem 0.6rem; font-size: 0.7rem;" onclick="gathrApp.showToast('Goal profile updated!')">Edit</button>
+        <!-- Interactive Networking Profile Setup -->
+        <div class="radar-profile-builder-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--brand-orange); font-weight: 700;">
+                Personalized Neural Matchmaking
+              </div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: #FFF; margin: 0.2rem 0;">
+                Configure Your Event Objective
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                Select your primary goal to dynamically re-weight AI match affinity scores across all verified badge holders.
+              </p>
+            </div>
+            <span class="badge badge-green">Profile Synced with Pass ✓</span>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 0.35rem;">
+              Select Stated Goal for this Event:
+            </div>
+            <div class="radar-profile-pill-selector">
+              <button class="radar-goal-pill active" data-goal="raising" onclick="gathrRadar.setUserGoal('raising')">
+                🚀 Raising Seed Capital ($250k - $1M)
+              </button>
+              <button class="radar-goal-pill" data-goal="investing" onclick="gathrRadar.setUserGoal('investing')">
+                💼 Deploying Fund Capital & Scouting Founders
+              </button>
+              <button class="radar-goal-pill" data-goal="hiring" onclick="gathrRadar.setUserGoal('hiring')">
+                🛠️ Hiring Distributed Systems & AI Leads
+              </button>
+              <button class="radar-goal-pill" data-goal="b2b" onclick="gathrRadar.setUserGoal('b2b')">
+                🤝 Sourcing B2B Commercial & Banking Partners
+              </button>
+            </div>
           </div>
         </div>
 
@@ -891,6 +1164,72 @@
     </div>
   </div>
 
+  <!-- ==========================================
+       MODAL: VENDOR RFP & ESCROW FUNDING
+       ========================================== -->
+  <div id="vendor-rfp-modal" class="meeting-modal-overlay" style="display: none;" onclick="gathrPlanning.closeRfpModal()">
+    <div class="meeting-modal-card" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+        <div>
+          <span class="badge badge-orange" style="margin-bottom: 0.35rem;" id="rfp-modal-vendor-cat">Category</span>
+          <h3 id="rfp-modal-vendor-title" style="font-size: 1.35rem; font-weight: 800; color: #FFF;">Vendor Name</h3>
+        </div>
+        <button style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="gathrPlanning.closeRfpModal()">✕</button>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Scope & Execution Requirements</label>
+        <textarea id="rfp-modal-scope-input" class="search-input" style="height: 80px; padding: 0.75rem; border-radius: var(--radius-md); font-family: var(--font-body);" placeholder="Outline deliverables, equipment counts, call-times..."></textarea>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Total Contract Budget (₦)</label>
+        <input type="number" id="rfp-modal-budget-input" class="search-input" style="padding-left: 1rem;" value="3500000">
+      </div>
+
+      <div style="background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--text-muted);">
+        🛡️ <strong>GATHR Escrow Guarantee:</strong> 50% milestone funded upfront in trust escrow. Sourced vendor receives payment only after soundcheck sign-off.
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn btn-secondary btn-sm" onclick="gathrPlanning.closeRfpModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="gathrPlanning.submitRfp()">Fund Escrow & Issue RFP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL: 1-ON-1 ATTENDEE MEETING SCHEDULER
+       ========================================== -->
+  <div id="meeting-scheduler-modal" class="meeting-modal-overlay" style="display: none;" onclick="gathrRadar.closeMeetingModal()">
+    <div class="meeting-modal-card" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+        <div>
+          <span class="badge badge-green" style="margin-bottom: 0.35rem;">GATHR Match Sync</span>
+          <h3 id="meeting-modal-attendee-name" style="font-size: 1.35rem; font-weight: 800; color: #FFF;">Attendee</h3>
+          <div id="meeting-modal-attendee-role" style="font-size: 0.85rem; color: var(--brand-orange-light);">Role</div>
+        </div>
+        <button style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="gathrRadar.closeMeetingModal()">✕</button>
+      </div>
+
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Select a 15-minute dedicated window at the VIP Networking Lounge during today's event:
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem;">
+        <button class="time-slot-btn selected" onclick="gathrRadar.selectMeetingSlot('10:45 AM (Coffee Break)', this)">10:45 AM (Coffee Break)</button>
+        <button class="time-slot-btn" onclick="gathrRadar.selectMeetingSlot('01:15 PM (Lunch Break)', this)">01:15 PM (Lunch Break)</button>
+        <button class="time-slot-btn" onclick="gathrRadar.selectMeetingSlot('03:45 PM (Deal Room)', this)">03:45 PM (Deal Room)</button>
+        <button class="time-slot-btn" onclick="gathrRadar.selectMeetingSlot('05:15 PM (Rooftop Mixer)', this)">05:15 PM (Rooftop Mixer)</button>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn btn-secondary btn-sm" onclick="gathrRadar.closeMeetingModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="gathrRadar.confirmMeeting()">Confirm & Send Calendar Invite</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div id="toast-container" class="toast-container"></div>
 
@@ -899,6 +1238,7 @@
   <script src="./js/ticket-engine.js"></script>
   <script src="./js/scanner.js"></script>
   <script src="./js/organizer.js"></script>
+  <script src="./js/planning.js"></script>
   <script src="./js/radar.js"></script>
   <script src="./js/wizard.js"></script>
   <script src="./js/admin.js"></script>

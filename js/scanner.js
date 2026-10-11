@@ -12,6 +12,8 @@ class GateScanner {
     this.currentGate = "Gate 1 (VIP & Fast-Track)";
     this.cameraActive = false;
     this.stream = null;
+    this.isOfflineSimulated = false;
+    this.offlineQueue = [];
     
     // Seed already checked-in tickets
     this.checkedInMap.set("GTHR-VIP-9021", {
@@ -26,6 +28,92 @@ class GateScanner {
       checkInTime: "09:22 AM",
       gate: "Gate 3 Main"
     });
+
+    // Listen for real browser network state changes
+    window.addEventListener('online', () => this.handleNetworkChange(true));
+    window.addEventListener('offline', () => this.handleNetworkChange(false));
+  }
+
+  handleNetworkChange(isOnline) {
+    if (this.isOfflineSimulated) return;
+    this.updateNetworkBadge(isOnline);
+    if (isOnline && this.offlineQueue.length > 0) {
+      this.syncOfflineQueue();
+    }
+  }
+
+  toggleOfflineSimulation() {
+    this.isOfflineSimulated = !this.isOfflineSimulated;
+    this.updateNetworkBadge(!this.isOfflineSimulated);
+    if (window.gathrApp) {
+      if (this.isOfflineSimulated) {
+        window.gathrApp.showToast("⚡ Offline Simulation Enabled: Scans will validate against local cache and queue locally.");
+      } else {
+        window.gathrApp.showToast("🌐 Online Mode Restored. Checking queue for automatic background sync...");
+        if (this.offlineQueue.length > 0) {
+          this.syncOfflineQueue();
+        }
+      }
+    }
+  }
+
+  updateNetworkBadge(isOnline) {
+    const badge = document.getElementById('gate-network-status-badge');
+    const queueBtn = document.getElementById('gate-sync-queue-btn');
+    if (badge) {
+      if (isOnline) {
+        badge.className = 'badge-pill';
+        badge.style.background = 'rgba(0, 230, 118, 0.2)';
+        badge.style.color = 'var(--accent-green)';
+        badge.innerHTML = `<span class="pulse-dot" style="background: var(--accent-green);"></span> Cloud Sync Live`;
+      } else {
+        badge.className = 'badge-pill';
+        badge.style.background = 'rgba(255, 184, 0, 0.2)';
+        badge.style.color = 'var(--brand-amber)';
+        badge.innerHTML = `⚠️ Offline Mode (Local Cache)`;
+      }
+    }
+    if (queueBtn) {
+      queueBtn.style.display = this.offlineQueue.length > 0 ? 'inline-flex' : 'none';
+      queueBtn.innerText = `Sync ${this.offlineQueue.length} Queued Scans ⚡`;
+    }
+  }
+
+  switchGate(gateName) {
+    this.currentGate = gateName;
+    const gateLabel = document.getElementById('hud-current-gate-label');
+    if (gateLabel) gateLabel.innerText = gateName;
+    if (window.gathrApp) {
+      window.gathrApp.showToast(`🚪 Gate switched to: "${gateName}"`);
+    }
+  }
+
+  async syncOfflineQueue() {
+    if (this.offlineQueue.length === 0) return;
+    const queueToSync = [...this.offlineQueue];
+    
+    try {
+      const resp = await fetch('/api/v1/check-ins/batch-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scans: queueToSync,
+          gate: this.currentGate
+        })
+      });
+      const data = await resp.json();
+      this.offlineQueue = [];
+      this.updateNetworkBadge(!this.isOfflineSimulated);
+      if (window.gathrApp) {
+        window.gathrApp.showToast(`✓ Background Sync Complete: ${data.successfulCount} check-ins committed to database (${data.duplicateRejections} duplicates rejected).`);
+      }
+    } catch (err) {
+      console.warn("Sync failed, queue retained:", err);
+      if (window.gathrApp) {
+        window.gathrApp.showToast("⚠️ Could not reach server. Scans safely stored in local queue.");
+      }
+    }
+  }
   }
 
   initAudio() {
@@ -183,6 +271,17 @@ class GateScanner {
     // Add to Organizer attendee list if exists
     if (window.gathrOrganizer) {
       window.gathrOrganizer.addRecentCheckIn(attendeeName, tierName, ticketCode, timeStr);
+    }
+
+    // Queue for sync if offline
+    if (this.isOfflineSimulated || !navigator.onLine) {
+      this.offlineQueue.push({
+        ticketCode: ticketCode,
+        gate: this.currentGate,
+        scannedAt: timeStr,
+        deviceId: 'pwa-gate-scanner-01'
+      });
+      this.updateNetworkBadge(false);
     }
   }
 
