@@ -222,7 +222,7 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
             })
 
         # API: Atomic Gate QR Code Validation
-        elif path == '/api/v1/check-ins/validate':
+        elif path in ('/api/v1/check-ins/validate', '/api/v1/check-in'):
             ticket_code = payload.get('ticketCode', '')
             gate = payload.get('gate', 'Gate 1 (VIP & Fast-Track)')
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gathr-v4-cache';
+const CACHE_NAME = 'gathr-v5-cache';
 const URLS_TO_CACHE = [
   './',
   './index.html',

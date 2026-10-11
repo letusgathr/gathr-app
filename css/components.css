@@ -9,11 +9,11 @@
   left: 0;
   width: 100%;
   z-index: 100;
-  background: rgba(7, 8, 11, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(7, 8, 11, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 0.875rem 0;
+  padding: 0.65rem 0;
   transition: all var(--transition-fast);
 }
 
@@ -26,17 +26,17 @@
 .brand-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   text-decoration: none;
   cursor: pointer;
 }
 
 .brand-logo-img {
-  height: 40px;
-  width: 40px;
+  height: 32px;
+  width: 32px;
   border-radius: var(--radius-sm);
   object-fit: contain;
-  box-shadow: 0 0 15px var(--brand-glow-subtle);
+  box-shadow: 0 0 12px var(--brand-glow-subtle);
 }
 
 .brand-title-wrap {
@@ -46,64 +46,68 @@
 
 .brand-title {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 900;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   color: #FFFFFF;
+  line-height: 1;
 }
 
 .brand-tagline-small {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   color: var(--brand-orange);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   font-weight: 600;
-  margin-top: -3px;
+  margin-top: 2px;
 }
 
 /* Nav Navigation Links */
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   list-style: none;
 }
 
 .nav-btn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--text-muted);
   font-family: var(--font-body);
-  font-size: 0.925rem;
+  font-size: 0.815rem;
   font-weight: 500;
-  padding: 0.55rem 1rem;
+  padding: 0.38rem 0.72rem;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--transition-fast);
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.38rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .nav-btn:hover {
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .nav-btn.active {
   color: #FFFFFF;
-  background: rgba(255, 85, 0, 0.15);
-  border: 1px solid rgba(255, 85, 0, 0.35);
+  background: rgba(255, 85, 0, 0.12);
+  border: 1px solid rgba(255, 85, 0, 0.3);
   font-weight: 600;
 }
 
 .nav-btn .badge-pill {
-  font-size: 0.7rem;
-  padding: 0.1rem 0.45rem;
+  font-size: 0.62rem;
+  padding: 0.08rem 0.38rem;
   background: var(--brand-orange);
   color: #FFFFFF;
   border-radius: var(--radius-full);
   font-weight: 700;
+  line-height: 1.2;
 }
 
 /* Action Buttons */
@@ -622,6 +626,21 @@
   to { transform: translateX(0); opacity: 1; }
 }
 
+@media (max-width: 1120px) {
+  .nav-btn {
+    font-size: 0.775rem;
+    padding: 0.32rem 0.6rem;
+    gap: 0.3rem;
+  }
+  .nav-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+  .nav-menu {
+    gap: 0.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   .events-grid {
     grid-template-columns: 1fr;
@@ -629,10 +648,29 @@
   .hero-title {
     font-size: 2.2rem;
   }
+  .nav-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .brand-link {
+    justify-content: space-between;
+  }
   .nav-menu {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.2rem;
+    scrollbar-width: none;
+    gap: 0.35rem;
+  }
+  .nav-menu::-webkit-scrollbar {
     display: none;
   }
-  .nav-mobile-btn {
-    display: block;
+  .nav-btn {
+    flex-shrink: 0;
+    font-size: 0.76rem;
+    padding: 0.32rem 0.65rem;
   }
 }
+
