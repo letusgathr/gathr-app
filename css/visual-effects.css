@@ -1,0 +1,530 @@
+/**
+ * GATHR Visual Effects System
+ * Implements the 5 Creative Paradigms:
+ * 1. React Three Fiber / 3D Objects & Holographic Passes
+ * 2. Liquid Glass JS / Apple-Style VisionOS Glassmorphism
+ * 3. Scroll World / Cinematic Parallax & Kinetic Storytelling
+ * 4. Liquid Logo / Liquid-Metal Molten Chrome Effects
+ * 5. Shader Gradient / Multi-Color Fluid Moving Backgrounds
+ */
+
+/* ========================================================
+   1. SHADER GRADIENT BACKGROUND CANVAS
+   ======================================================== */
+#shader-gradient-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.ambient-noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* ========================================================
+   AFRICAN FESTIVAL AMBIENT BLEND BACKDROP
+   ======================================================== */
+.hero-festival-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../assets/images/african-festival-bg.jpg');
+  background-size: cover;
+  background-position: center 38%;
+  opacity: 0.38;
+  filter: saturate(135%) contrast(108%);
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 90%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 90%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-festival-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(180deg, rgba(8, 8, 12, 0.45) 0%, rgba(8, 8, 12, 0.72) 60%, #08080C 100%),
+    radial-gradient(circle at 50% 40%, rgba(255, 85, 0, 0.16), transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section .app-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* ========================================================
+   2. LIQUID GLASS JS (Apple VisionOS / macOS Specular Glass)
+   ======================================================== */
+.liquid-glass-card {
+  position: relative;
+  background: rgba(18, 18, 24, 0.65);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 15px 35px -5px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+}
+
+.liquid-glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 85, 0, 0.15),
+    transparent 40%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.liquid-glass-card:hover::before {
+  opacity: 1;
+}
+
+.liquid-glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 85, 0, 0.35);
+  box-shadow: 
+    0 25px 50px -10px rgba(255, 85, 0, 0.25),
+    0 0 0 1px rgba(255, 85, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Glass Pill Dock */
+.liquid-glass-pill {
+  background: rgba(25, 25, 35, 0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* ========================================================
+   3. LIQUID LOGO (Molten Chrome / Liquid-Metal Shimmer)
+   ======================================================== */
+.liquid-logo-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  perspective: 800px;
+}
+
+.liquid-metal-emblem {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1A1A22, #0A0A0E);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 0 15px rgba(255, 85, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.liquid-metal-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.liquid-logo-wrap:hover .liquid-metal-emblem {
+  transform: rotateY(15deg) rotateX(-5deg) scale(1.08);
+  box-shadow: 
+    0 0 25px rgba(255, 85, 0, 0.65),
+    0 0 50px rgba(255, 170, 0, 0.3),
+    inset 0 1px 3px rgba(255, 255, 255, 0.8);
+}
+
+/* Hero Cinematic Logo Showcase */
+.hero-cinematic-logo-wrap {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.hero-cinematic-logo {
+  max-width: 260px;
+  width: 90%;
+  height: auto;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.8),
+    0 0 40px rgba(255, 85, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.hero-cinematic-logo:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 
+    0 30px 65px rgba(0, 0, 0, 0.9),
+    0 0 60px rgba(255, 85, 0, 0.55),
+    0 0 90px rgba(255, 170, 0, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.liquid-text-shimmer {
+  background: linear-gradient(
+    90deg, 
+    #FFFFFF 0%, 
+    #FFAA55 25%, 
+    #FFFFFF 50%, 
+    #FF5500 75%, 
+    #FFFFFF 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: liquidShimmer 4s linear infinite;
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+@keyframes liquidShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ========================================================
+   4. REACT THREE FIBER / 3D OBJECTS & TILT PASS
+   ======================================================== */
+.three-canvas-container {
+  width: 100%;
+  height: 320px;
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.pass-3d-scene-wrap {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.ticket-pass.tilt-3d {
+  transition: transform 0.15s ease-out, box-shadow 0.2s ease;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.holographic-glare-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(0, 255, 240, 0.25) 45%,
+    rgba(255, 0, 128, 0.25) 55%,
+    rgba(255, 180, 0, 0.2) 65%,
+    transparent 100%
+  );
+  mix-blend-mode: color-dodge;
+  opacity: 0.6;
+  z-index: 10;
+  transform: translateZ(30px);
+  transition: opacity 0.3s ease;
+}
+
+/* 3D Floating Stage Simulation Orb */
+.stage-3d-orb {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255, 85, 0, 0.8), rgba(120, 0, 255, 0.3) 60%, transparent 80%);
+  filter: blur(50px);
+  pointer-events: none;
+  animation: orbDrift 14s ease-in-out infinite alternate;
+  z-index: -1;
+}
+
+@keyframes orbDrift {
+  0% { transform: translate(-30px, -20px) scale(0.9); }
+  50% { transform: translate(50px, 30px) scale(1.15); }
+  100% { transform: translate(20px, -40px) scale(1.0); }
+}
+
+/* ========================================================
+   5. SCROLL WORLD / CINEMATIC SCROLLING & STORYTELLING
+   ======================================================== */
+.scroll-world-section {
+  position: relative;
+  padding: 5rem 0;
+}
+
+.cinematic-reveal {
+  opacity: 0;
+  transform: translateY(35px) scale(0.98);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.cinematic-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.stagger-delay-1 { transition-delay: 0.1s; }
+.stagger-delay-2 { transition-delay: 0.2s; }
+.stagger-delay-3 { transition-delay: 0.3s; }
+.stagger-delay-4 { transition-delay: 0.4s; }
+
+/* Sticky Storytelling Showcase */
+.story-sticky-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  padding: 4rem 2rem;
+  background: rgba(14, 14, 20, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  margin: 4rem 0;
+  backdrop-filter: blur(20px);
+}
+
+@media (max-width: 900px) {
+  .story-sticky-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem 1.25rem;
+  }
+}
+
+.story-step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(255, 85, 0, 0.15);
+  border: 1px solid rgba(255, 85, 0, 0.3);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brand-orange-light);
+  margin-bottom: 1rem;
+}
+
+.story-feature-card {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.story-feature-card:hover, .story-feature-card.active {
+  background: rgba(255, 85, 0, 0.08);
+  border-color: rgba(255, 85, 0, 0.35);
+  transform: translateX(8px);
+}
+
+/* Top Utility Bar (Location & Currency & Role Switcher) */
+.top-utility-bar {
+  background: rgba(8, 8, 12, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 0.45rem 0;
+  position: relative;
+  z-index: 101;
+}
+
+.utility-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.utility-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.utility-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFF;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.utility-select:hover {
+  border-color: var(--brand-orange);
+}
+
+.role-switcher-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, rgba(255, 85, 0, 0.15), rgba(255, 170, 0, 0.1));
+  border: 1px solid rgba(255, 85, 0, 0.35);
+  color: #FFF;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.28rem 0.75rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.role-switcher-btn:hover {
+  background: linear-gradient(135deg, var(--brand-orange), var(--brand-amber));
+  color: #000;
+  box-shadow: 0 0 15px rgba(255, 85, 0, 0.4);
+}
+
+/* Dedicated Organizer Workspace Banner */
+.organizer-mode-banner {
+  background: linear-gradient(90deg, #1A1208, #2A170A, #120A05);
+  border-bottom: 1px solid rgba(255, 149, 0, 0.35);
+  padding: 0.75rem 0;
+  margin-bottom: 2rem;
+  display: none;
+}
+
+.organizer-banner-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Legal Center Modal */
+.legal-modal-card {
+  background: #0E0E14;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xl);
+  max-width: 900px;
+  width: 94%;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+}
+
+.legal-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.legal-tab-btn.active {
+  color: #FFF;
+  border-bottom-color: var(--brand-orange);
+  background: rgba(255, 85, 0, 0.05);
+}
+
+.legal-body-content {
+  padding: 2rem;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-dim);
+}
+
+.legal-body-content h1, 
+.legal-body-content h2, 
+.legal-body-content h3 {
+  color: #FFF;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.legal-body-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.legal-body-content th, 
+.legal-body-content td {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.82rem;
+}
+
+.legal-body-content th {
+  background: rgba(255, 255, 255, 0.04);
+  color: #FFF;
+}

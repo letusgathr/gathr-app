@@ -19,16 +19,56 @@
   <link rel="stylesheet" href="./css/wizard.css">
   <link rel="stylesheet" href="./css/admin.css">
   <link rel="stylesheet" href="./css/planning.css">
+  <link rel="stylesheet" href="./css/visual-effects.css">
 </head>
 <body>
 
-  <!-- Sticky Navbar -->
+  <!-- Top Global Utility Bar: Location, Currency & Mode Switcher -->
+  <div class="top-utility-bar">
+    <div class="app-container utility-inner">
+      <div class="utility-group">
+        <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Hub:</span>
+        <select id="global-country-select" class="utility-select" aria-label="Select Country">
+          <option value="all">🌍 Global (All Regions)</option>
+          <option value="US">🇺🇸 United States</option>
+          <option value="GB">🇬🇧 United Kingdom</option>
+          <option value="CA">🇨🇦 Canada</option>
+          <option value="NG">🇳🇬 Nigeria</option>
+          <option value="GH">🇬🇭 Ghana</option>
+          <option value="KE">🇰🇪 Kenya</option>
+        </select>
+
+        <span style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-left: 0.5rem;">Currency:</span>
+        <select id="global-currency-select" class="utility-select" aria-label="Select Currency">
+          <option value="USD" selected>🇺🇸 USD ($)</option>
+          <option value="GBP">🇬🇧 GBP (£)</option>
+          <option value="CAD">🇨🇦 CAD (C$)</option>
+          <option value="EUR">🇪🇺 EUR (€)</option>
+          <option value="NGN">🇳🇬 NGN (₦)</option>
+          <option value="KES">🇰🇪 KES (KSh)</option>
+          <option value="GHS">🇬🇭 GHS (GH₵)</option>
+        </select>
+      </div>
+
+      <div class="utility-group">
+        <button class="utility-select" onclick="gathrApp.openLegalModal('tos')" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+          ⚖️ Legal & Compliance Hub
+        </button>
+        <button class="role-switcher-btn" onclick="gathrApp.switchView('organizer')">
+          <span class="pulse-dot"></span>
+          Organizer Studio Mode →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Navbar with Liquid Metal Shimmer Logo -->
   <header class="navbar">
     <div class="app-container nav-wrapper">
-      <div class="brand-link" onclick="gathrApp.switchView('explore')">
-        <img src="./assets/images/logo.png" alt="GATHR Logo" class="brand-logo-img">
+      <div class="liquid-logo-wrap" onclick="gathrApp.switchView('explore')">
+        <img src="./assets/images/logo.png" alt="GATHR Logo" class="brand-logo-img" style="width: 36px; height: 36px; border-radius: 8px;">
         <div class="brand-title-wrap">
-          <span class="brand-title">GATHR</span>
+          <span class="brand-title liquid-text-shimmer">GATHR</span>
           <span class="brand-tagline-small">Powering Access</span>
         </div>
       </div>
@@ -90,38 +130,73 @@
     </div>
   </header>
 
+  <!-- Dedicated Organizer Mode Top Banner -->
+  <div id="organizer-mode-banner" class="organizer-mode-banner">
+    <div class="app-container organizer-banner-content">
+      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <span class="badge badge-orange" style="font-weight: 800; font-size: 0.75rem;">CREATOR STUDIO ACTIVE</span>
+        <span style="color: #FFF; font-weight: 600; font-size: 0.85rem;">Managing Event:</span>
+        <select id="org-event-switcher" class="utility-select" style="font-size: 0.8rem; font-weight: 700; background: rgba(0,0,0,0.6); border-color: var(--brand-orange);"></select>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+        <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.downloadOfflineManifest()">
+          ⬇️ Offline Manifest
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="gathrApp.switchView('scanner')">
+          Launch Gate Scanner HUD
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="gathrApp.switchView('explore')">
+          ← Exit to Attendee Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==========================================
        VIEW: EXPLORE & BROWSE EVENTS
        ========================================== -->
   <main id="view-explore" class="view-panel">
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Hero Section with Blended African Festival Backdrop & 3D Stage Orb -->
+    <section class="hero-section" style="position: relative;">
+      <!-- Blended African Festival Ambient Backdrop & Dynamic Glow -->
+      <div class="hero-festival-backdrop"></div>
+      <div class="hero-festival-overlay"></div>
+      <div class="stage-3d-orb"></div>
+
       <div class="app-container">
-        <div class="hero-pill-badge">
-          <span class="pulse-dot"></span>
-          Next-Gen Event Infrastructure
+        <!-- Prominent GATHR Cinematic Logo Showcase -->
+        <div class="hero-cinematic-logo-wrap cinematic-reveal">
+          <img src="./assets/images/logo-cinematic.png" alt="GATHR Cinematic Logo" class="hero-cinematic-logo">
         </div>
-        <h1 class="hero-title">
+
+        <div class="hero-pill-badge cinematic-reveal">
+          <span class="pulse-dot"></span>
+          Next-Gen Event Infrastructure • Global & Pan-African
+        </div>
+        <h1 class="hero-title cinematic-reveal stagger-delay-1">
           Powering Seamless <span class="gradient-text">Access</span> to Every Gathering
         </h1>
-        <p class="hero-description">
-          The all-in-one platform for modern organizers and attendees. Fraud-proof dynamic tickets, sub-5s gate entry, and deep real-time operational insights.
+        <p class="hero-description cinematic-reveal stagger-delay-2">
+          The all-in-one platform for modern event organizers and attendees globally.
         </p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" onclick="gathrApp.openCheckout('gathr-event-01')">
+        <div class="hero-actions cinematic-reveal stagger-delay-3">
+          <button class="btn btn-primary" onclick="gathrApp.openCheckout('gathr-event-04')">
             Get Flagship Pass
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
+          <button class="btn btn-secondary" onclick="gathrApp.switchView('organizer')">
+            Open Organizer Studio
+          </button>
           <button class="btn btn-secondary" onclick="gathrApp.switchView('scanner')">
-            Launch Gate Scanner PWA
+            Launch Gate Scanner HUD
           </button>
         </div>
 
         <!-- Live Statistics Counter -->
-        <div class="stats-counter-bar">
+        <div class="stats-counter-bar liquid-glass-card cinematic-reveal stagger-delay-4">
           <div class="stat-item">
-            <div class="stat-number gradient-text">500+</div>
-            <div class="stat-label">Events Hosted</div>
+            <div class="stat-number gradient-text">8+</div>
+            <div class="stat-label">Global Hub Cities</div>
           </div>
           <div class="stat-item">
             <div class="stat-number">120K+</div>
@@ -139,21 +214,89 @@
       </div>
     </section>
 
+    <!-- Cinematic Scroll World / Storytelling Section (Eventbrite Case Study Showpiece) -->
+    <section class="scroll-world-section app-container">
+      <div class="story-sticky-container liquid-glass-card cinematic-reveal">
+        <div>
+          <div class="story-step-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Why GATHR Wins
+          </div>
+          <h2 style="font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; color: #FFF;">
+            Engineered for <span class="gradient-text">Zero-Friction</span> Gatherings
+          </h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.5rem;">
+            Traditional ticketing platforms burden organizers with disconnected spreadsheets, high ticket scalping, 3-week settlement delays, and catastrophic door queues. GATHR rebuilds event infrastructure from first principles.
+          </p>
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn btn-primary btn-sm" onclick="gathrEventWizard.openWizard()">
+              Host Your Event on GATHR
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="gathrApp.switchView('scanner')">
+              Gate Access Control HUD
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="story-feature-card active">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+              <span class="badge badge-orange">1</span>
+              <strong style="color: #FFF; font-size: 1rem;">Fraud-Proof Dynamic TOTP Passes</strong>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.825rem; margin: 0;">
+              Rolling QR code refreshes every 20 seconds. Screenshots and duplicate passes fail door validation instantly.
+            </p>
+          </div>
+
+          <div class="story-feature-card">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+              <span class="badge badge-green">2</span>
+              <strong style="color: #FFF; font-size: 1rem;">Sub-0.4s Mesh Door Check-In HUD</strong>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.825rem; margin: 0;">
+              High-speed camera scanner with offline local mesh synchronization. Validates tickets even during venue Wi-Fi collapse.
+            </p>
+          </div>
+
+          <div class="story-feature-card">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+              <span class="badge badge-orange">3</span>
+              <strong style="color: #FFF; font-size: 1rem;">Automated Multi-Party Split Payouts</strong>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.825rem; margin: 0;">
+              Programmatic settlement automatically splits revenue between Host, Venue Partner, and Promoters into verified accounts.
+            </p>
+          </div>
+
+          <div class="story-feature-card">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+              <span class="badge" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3);">4</span>
+              <strong style="color: #FFF; font-size: 1rem;">Pan-African & Global Multi-Currency</strong>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.825rem; margin: 0;">
+              Supports attendees and organizers across the US, UK, Canada, Nigeria, Ghana, Kenya, and South Africa with instant currency conversions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Events Discovery Section -->
-    <section style="padding: 2.5rem 0 5rem;">
+    <section style="padding: 1rem 0 5rem;">
       <div class="app-container">
         <div class="section-header">
           <div>
             <div class="section-tagline">Curated Experiences</div>
-            <h2 class="section-title">Upcoming Premier Events</h2>
+            <h2 class="section-title">Upcoming Premier Gatherings</h2>
           </div>
         </div>
 
-        <!-- Filters Bar -->
-        <div class="filter-container">
+        <!-- Refined Filters Bar with Global Hub & City Selection -->
+        <div class="filter-container liquid-glass-pill" style="padding: 0.65rem 1rem;">
           <div class="search-input-wrap">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="event-search-input" class="search-input" placeholder="Search by title, venue, or keywords...">
+            <input type="text" id="event-search-input" class="search-input" placeholder="Search events, cities, artists, venues...">
           </div>
 
           <div class="category-pills">
@@ -164,9 +307,14 @@
           </div>
 
           <select id="city-select" class="city-select">
-            <option value="all">📍 All Locations</option>
-            <option value="Lagos">Lagos, Nigeria</option>
-            <option value="Abuja">Abuja, Nigeria</option>
+            <option value="all">📍 All Global Cities</option>
+            <option value="New York">New York, US</option>
+            <option value="London">London, UK</option>
+            <option value="Toronto">Toronto, CA</option>
+            <option value="Lagos">Lagos, NG</option>
+            <option value="Abuja">Abuja, NG</option>
+            <option value="Nairobi">Nairobi, KE</option>
+            <option value="Accra">Accra, GH</option>
           </select>
         </div>
 
@@ -566,178 +714,276 @@
   <!-- ==========================================
        VIEW: ORGANIZER COMMAND CENTER & ANALYTICS
        ========================================== -->
-  <main id="view-organizer" class="view-panel" style="display: none; padding: 3rem 0 6rem;">
+  <main id="view-organizer" class="view-panel" style="display: none; padding: 2.5rem 0 6rem;">
     <div class="app-container">
-      <div class="section-header">
+      <div class="section-header" style="margin-bottom: 1.5rem;">
         <div>
-          <div class="section-tagline">Command Center</div>
-          <h2 class="section-title">Event Operations & Analytics</h2>
+          <div class="section-tagline">Eventbrite Organizer Model</div>
+          <h2 class="section-title">Creator Studio & Operations Hub</h2>
+          <p style="color: var(--text-muted); font-size: 0.925rem; margin-top: 0.25rem;">
+            Full operations control: real-time ticketing velocity, gate scanners, split ledgers, and attendee broadcasts.
+          </p>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="gathrOrganizer.exportAttendeesCsv()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export Attendee CSV
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.downloadOfflineManifest()">
+            ⬇️ Offline Manifest (JSON)
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="gathrOrganizer.exportAttendeesCsv()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Attendee CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Studio Sub-Navigation Bar -->
+      <div class="planning-tab-pills" style="margin-bottom: 2rem;">
+        <button class="planning-tab-btn org-subtab-btn active" data-tab="overview" onclick="gathrOrganizer.switchSubTab('overview')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Overview & Pacing
+        </button>
+        <button class="planning-tab-btn org-subtab-btn" data-tab="door" onclick="gathrOrganizer.switchSubTab('door')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3"/><path d="M20 7V4h-3"/><path d="M4 17v3h3"/><path d="M20 17v3h-3"/><rect x="9" y="9" width="6" height="6"/></svg>
+          Door Gate & Scanner HUD
+        </button>
+        <button class="planning-tab-btn org-subtab-btn" data-tab="attendees" onclick="gathrOrganizer.switchSubTab('attendees')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Attendee Roster
+        </button>
+        <button class="planning-tab-btn org-subtab-btn" data-tab="splits" onclick="gathrOrganizer.switchSubTab('splits')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Settlement Ledger
+        </button>
+        <button class="planning-tab-btn org-subtab-btn" data-tab="broadcast" onclick="gathrOrganizer.switchSubTab('broadcast')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          Attendee Broadcasts
         </button>
       </div>
 
-      <!-- Live KPI Cards -->
-      <div class="organizer-overview-grid">
-        <div class="metric-card">
-          <div class="metric-card-top">
-            <span class="metric-card-label">Gross Revenue</span>
-            <div class="metric-icon-wrap">₦</div>
-          </div>
-          <div id="org-metric-revenue" class="metric-value">₦24,500,000</div>
-          <div class="metric-trend">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-            +18.4% from last edition
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-card-top">
-            <span class="metric-card-label">Tickets Sold</span>
-            <div class="metric-icon-wrap">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+      <!-- PANE 1: OVERVIEW & PACING -->
+      <div id="org-pane-overview" class="org-subtab-pane">
+        <!-- Live KPI Cards -->
+        <div class="organizer-overview-grid">
+          <div class="metric-card liquid-glass-card">
+            <div class="metric-card-top">
+              <span class="metric-card-label">Gross GMV</span>
+              <div class="metric-icon-wrap">₦</div>
+            </div>
+            <div id="org-metric-revenue" class="metric-value">₦24,500,000</div>
+            <div class="metric-trend">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+              +18.4% pacing vs benchmark
             </div>
           </div>
-          <div id="org-metric-tickets" class="metric-value">785</div>
-          <div class="metric-trend" style="color: var(--brand-orange);">84% of capacity</div>
-        </div>
 
-        <div class="metric-card">
-          <div class="metric-card-top">
-            <span class="metric-card-label">Gate Check-Ins</span>
-            <div class="metric-icon-wrap">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="metric-card liquid-glass-card">
+            <div class="metric-card-top">
+              <span class="metric-card-label">Tickets Issued</span>
+              <div class="metric-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+              </div>
             </div>
+            <div id="org-metric-tickets" class="metric-value">785</div>
+            <div class="metric-trend" style="color: var(--brand-orange);">Dynamic Quota Active</div>
           </div>
-          <div id="org-metric-checkins" class="metric-value">184</div>
-          <div class="metric-trend" style="color: var(--accent-green);">Live Stream Active</div>
+
+          <div class="metric-card liquid-glass-card">
+            <div class="metric-card-top">
+              <span class="metric-card-label">Door Check-Ins</span>
+              <div class="metric-icon-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div id="org-metric-checkins" class="metric-value">184</div>
+            <div class="metric-trend" style="color: var(--accent-green);">Live Door HUD Active</div>
+          </div>
+
+          <div class="metric-card liquid-glass-card">
+            <div class="metric-card-top">
+              <span class="metric-card-label">Turnout Rate</span>
+              <div class="metric-icon-wrap">%</div>
+            </div>
+            <div id="org-metric-pacing" class="metric-value">23%</div>
+            <div class="metric-trend">Peak arrival pacing at 09:45 AM</div>
+          </div>
         </div>
 
-        <div class="metric-card">
-          <div class="metric-card-top">
-            <span class="metric-card-label">Turnout Rate</span>
-            <div class="metric-icon-wrap">%</div>
-          </div>
-          <div id="org-metric-pacing" class="metric-value">23%</div>
-          <div class="metric-trend">Peak pacing expected at 10:00 AM</div>
-        </div>
-      </div>
-
-      <!-- AI Dynamic Pricing & Turnout Intelligence Bar -->
-      <div style="background: linear-gradient(135deg, rgba(255, 85, 0, 0.12) 0%, rgba(13, 15, 24, 0.95) 100%); border: 1px solid rgba(255, 85, 0, 0.3); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--brand-orange); font-weight: 700; margin-bottom: 0.2rem;">
-            ⚡ AI Yield Optimization Engine
-          </div>
-          <div style="font-size: 1.15rem; font-weight: 800; color: #FFF;">
-            Demand Surge Alert: VIP tier velocity +42% above 7-day pacing (only 46 remaining).
-          </div>
-          <div style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.25rem;">
-            Dynamic recommendation: Increase Executive VIP pass from ₦95,000 to ₦109,250 (+15%) to capture estimated +₦3.85M GMV prior to sellout.
-          </div>
-        </div>
-        <button id="ai-dynamic-pricing-btn" class="btn btn-primary btn-sm" onclick="gathrOrganizer.applyAiDynamicPricing()">
-          Apply +15% Surge Pricing
-        </button>
-      </div>
-
-      <!-- Turnout Forecast & Multi-Party Split Ledger -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-        <div class="metric-card">
-          <div class="metric-card-top">
-            <span class="metric-card-label">Turnout Predictor (Neural Model)</span>
-            <span class="badge badge-green" style="font-size: 0.7rem;">94% Accuracy</span>
-          </div>
-          <div id="org-forecast-attendance" class="metric-value" style="color: var(--accent-green); font-size: 1.6rem;">712 Attendees (~90.7%)</div>
-          <div id="org-forecast-confidence" class="metric-trend" style="color: var(--text-muted); font-size: 0.75rem;">Factoring Friday evening Lagos Island traffic and historical check-in curves.</div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-card-top">
-            <span class="metric-card-label">Settlement Splits (ACID Ledger)</span>
-            <span class="badge badge-orange" style="font-size: 0.7rem;">Direct Disbursement</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <span style="color: var(--text-muted);">Host Share (70%):</span>
-            <strong id="org-split-host" style="color: #FFF;">₦16,721,250</strong>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <span style="color: var(--text-muted);">Venue Share (20%):</span>
-            <strong id="org-split-venue" style="color: var(--accent-cyan);">₦4,777,500</strong>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.35rem 0;">
-            <span style="color: var(--text-muted);">Promoter Pool (10%):</span>
-            <strong id="org-split-promoter" style="color: var(--accent-green);">₦2,388,750</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- Real-time Entry Velocity Chart -->
-      <div class="analytics-chart-panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <!-- AI Dynamic Pricing & Turnout Intelligence Bar -->
+        <div style="background: linear-gradient(135deg, rgba(255, 85, 0, 0.12) 0%, rgba(13, 15, 24, 0.95) 100%); border: 1px solid rgba(255, 85, 0, 0.3); border-radius: var(--radius-lg); padding: 1.5rem 1.75rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h3 style="font-size: 1.25rem; font-weight: 700;">Gate Entry Velocity (Check-ins per hour)</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time distribution across all 3 active venue entry gates.</p>
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--brand-orange); font-weight: 700; margin-bottom: 0.2rem;">
+              ⚡ AI Yield Optimization Engine
+            </div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #FFF;">
+              Demand Surge Alert: VIP tier velocity +42% above 7-day pacing (under 50 remaining).
+            </div>
+            <div style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.25rem;">
+              Dynamic recommendation: Apply a +15% surge pricing adjustment to maximize yield prior to tier sellout.
+            </div>
           </div>
-          <span class="badge badge-green">Live Monitoring</span>
+          <button id="ai-dynamic-pricing-btn" class="btn btn-primary btn-sm" onclick="gathrOrganizer.applyAiDynamicPricing()">
+            Apply +15% Surge Pricing
+          </button>
         </div>
 
-        <div class="chart-bars-wrap">
-          <div class="chart-bar-col">
-            <div class="chart-bar-tooltip">08:00 AM: 12 scans</div>
-            <div class="chart-bar" style="height: 18%;"></div>
-            <div class="chart-bar-time">08:00</div>
+        <!-- Real-time Entry Velocity Chart -->
+        <div class="analytics-chart-panel liquid-glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700;">Gate Entry Velocity (Check-ins per hour)</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time distribution across active door lanes.</p>
+            </div>
+            <span class="badge badge-green">Live Monitoring</span>
           </div>
-          <div class="chart-bar-col">
-            <div class="chart-bar-tooltip">08:30 AM: 34 scans</div>
-            <div class="chart-bar" style="height: 38%;"></div>
-            <div class="chart-bar-time">08:30</div>
-          </div>
-          <div class="chart-bar-col">
-            <div class="chart-bar-tooltip">09:00 AM: 82 scans</div>
-            <div class="chart-bar" style="height: 85%;"></div>
-            <div class="chart-bar-time">09:00</div>
-          </div>
-          <div class="chart-bar-col">
-            <div class="chart-bar-tooltip">09:30 AM: 56 scans</div>
-            <div class="chart-bar" style="height: 60%;"></div>
-            <div class="chart-bar-time">09:30</div>
-          </div>
-          <div class="chart-bar-col">
-            <div class="chart-bar-tooltip">10:00 AM: Projected 95</div>
-            <div class="chart-bar" style="height: 98%; opacity: 0.5; border-style: dashed;"></div>
-            <div class="chart-bar-time">10:00 (Est)</div>
+
+          <div class="chart-bars-wrap">
+            <div class="chart-bar-col">
+              <div class="chart-bar-tooltip">08:00 AM: 12 scans</div>
+              <div class="chart-bar" style="height: 18%;"></div>
+              <div class="chart-bar-time">08:00</div>
+            </div>
+            <div class="chart-bar-col">
+              <div class="chart-bar-tooltip">08:30 AM: 34 scans</div>
+              <div class="chart-bar" style="height: 38%;"></div>
+              <div class="chart-bar-time">08:30</div>
+            </div>
+            <div class="chart-bar-col">
+              <div class="chart-bar-tooltip">09:00 AM: 82 scans</div>
+              <div class="chart-bar" style="height: 85%;"></div>
+              <div class="chart-bar-time">09:00</div>
+            </div>
+            <div class="chart-bar-col">
+              <div class="chart-bar-tooltip">09:30 AM: 56 scans</div>
+              <div class="chart-bar" style="height: 60%;"></div>
+              <div class="chart-bar-time">09:30</div>
+            </div>
+            <div class="chart-bar-col">
+              <div class="chart-bar-tooltip">10:00 AM: Projected 95</div>
+              <div class="chart-bar" style="height: 98%; opacity: 0.5; border-style: dashed;"></div>
+              <div class="chart-bar-time">10:00 (Est)</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Attendee Check-In Management Table -->
-      <div class="attendee-table-panel">
-        <div class="table-toolbar">
-          <h3 style="font-size: 1.25rem; font-weight: 700;">Live Attendee Gate Registry</h3>
-          <div style="display: flex; gap: 0.75rem;">
-            <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.renderAttendeeTable('all')">All</button>
-            <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.renderAttendeeTable('checked')">Checked In</button>
-            <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.renderAttendeeTable('pending')">Pending</button>
+      <!-- PANE 2: DOOR GATE & SCANNER HUD -->
+      <div id="org-pane-door" class="org-subtab-pane" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <div class="metric-card liquid-glass-card">
+            <div class="section-tagline">Access Control</div>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: #FFF; margin-bottom: 0.5rem;">Gate Check-In HUD</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+              Deploy our zero-latency camera QR scanner on any smartphone or tablet. Sub-0.4s response with offline local mesh failover.
+            </p>
+            <div style="display: flex; gap: 0.75rem;">
+              <button class="btn btn-primary btn-sm" onclick="gathrApp.switchView('scanner')">
+                Launch Full-Screen Scanner →
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.downloadOfflineManifest()">
+                Download Offline Manifest
+              </button>
+            </div>
+          </div>
+
+          <div class="metric-card liquid-glass-card">
+            <div class="section-tagline">Door Integrity</div>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: #FFF; margin-bottom: 0.5rem;">Anti-Passback Security</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+              Dynamic rolling TOTP tokens prevent reused screenshots. Scanned tickets are immediately flagged across all connected gate lanes.
+            </p>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="badge badge-green">✓ AES-256 Mesh Encrypted</span>
+              <span class="badge" style="background: rgba(255,255,255,0.06); color: #FFF;">Door 1, 2, 3 Synchronized</span>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div style="overflow-x: auto;">
-          <table class="attendee-table">
-            <thead>
-              <tr>
-                <th>Attendee</th>
-                <th>Email</th>
-                <th>Tier</th>
-                <th>Ticket Hash</th>
-                <th>Status</th>
-                <th>Check-in Time</th>
-              </tr>
-            </thead>
-            <tbody id="attendees-table-body"></tbody>
-          </table>
+      <!-- PANE 3: ATTENDEE ROSTER -->
+      <div id="org-pane-attendees" class="org-subtab-pane" style="display: none;">
+        <div class="attendee-table-panel liquid-glass-card">
+          <div class="table-toolbar">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 700;">Live Attendee Gate Registry</h3>
+              <p style="font-size: 0.825rem; color: var(--text-muted);">Real-time check-in validation log with instant search.</p>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.renderAttendeeTable('all')">All</button>
+              <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.renderAttendeeTable('checked')">Checked In</button>
+              <button class="btn btn-secondary btn-sm" onclick="gathrOrganizer.renderAttendeeTable('pending')">Pending</button>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="attendee-table">
+              <thead>
+                <tr>
+                  <th>Attendee</th>
+                  <th>Email</th>
+                  <th>Tier</th>
+                  <th>Ticket Hash</th>
+                  <th>Status</th>
+                  <th>Check-in Time</th>
+                </tr>
+              </thead>
+              <tbody id="attendees-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 4: SETTLEMENT LEDGER -->
+      <div id="org-pane-splits" class="org-subtab-pane" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+          <div class="metric-card liquid-glass-card">
+            <div class="metric-card-top">
+              <span class="metric-card-label">Turnout Predictor (Neural Model)</span>
+              <span class="badge badge-green" style="font-size: 0.7rem;">94% Accuracy</span>
+            </div>
+            <div id="org-forecast-attendance" class="metric-value" style="color: var(--accent-green); font-size: 1.6rem;">712 Attendees (~90.7%)</div>
+            <div id="org-forecast-confidence" class="metric-trend" style="color: var(--text-muted); font-size: 0.75rem;">Factoring traffic conditions and historical arrival velocity.</div>
+          </div>
+
+          <div class="metric-card liquid-glass-card">
+            <div class="metric-card-top">
+              <span class="metric-card-label">Settlement Splits (ACID Smart Ledger)</span>
+              <span class="badge badge-orange" style="font-size: 0.7rem;">Automated Multi-Party</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+              <span style="color: var(--text-muted);">Organizer Share (70%):</span>
+              <strong id="org-split-host" style="color: #FFF;">₦16,721,250</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+              <span style="color: var(--text-muted);">Venue Partner (20%):</span>
+              <strong id="org-split-venue" style="color: var(--accent-cyan);">₦4,777,500</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.5rem 0;">
+              <span style="color: var(--text-muted);">Promoter Affiliate Pool (10%):</span>
+              <strong id="org-split-promoter" style="color: var(--accent-green);">₦2,388,750</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANE 5: ATTENDEE BROADCASTS -->
+      <div id="org-pane-broadcast" class="org-subtab-pane" style="display: none;">
+        <div class="metric-card liquid-glass-card" style="max-width: 700px;">
+          <div class="section-tagline">Direct Messaging</div>
+          <h3 style="font-size: 1.3rem; font-weight: 800; color: #FFF; margin-bottom: 0.5rem;">Broadcast Alert to Ticket Holders</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Send urgent scheduling updates, gate entrance maps, or parking notices directly to attendees via official WhatsApp and Email.
+          </p>
+
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Announcement Message</label>
+            <textarea id="broadcast-msg-input" class="search-input" style="height: 100px; padding: 0.75rem; border-radius: var(--radius-md); font-family: var(--font-body);" placeholder="e.g. Doors open at 8:30 AM! Please have your GATHR live dynamic pass ready at Gate 1 for priority entry..."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <span style="font-size: 0.75rem; color: var(--text-dim);">Reaches all verified ticket holders automatically.</span>
+            <button class="btn btn-primary btn-sm" onclick="gathrOrganizer.sendAttendeeBroadcast()">
+              📢 Send Live Broadcast
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1370,6 +1616,47 @@
     </div>
   </div>
 
+  <!-- ==========================================
+       MODAL: GLOBAL LEGAL & COMPLIANCE HUB
+       ========================================== -->
+  <div id="legal-hub-modal" class="meeting-modal-overlay" style="display: none;" onclick="gathrApp.closeLegalModal()">
+    <div class="legal-modal-card" onclick="event.stopPropagation()">
+      <div style="padding: 1.25rem 1.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green);"></div>
+          <span style="font-weight: 800; font-size: 1.15rem; color: #FFF; font-family: var(--font-display);">GATHR Legal & Compliance Center</span>
+          <span class="badge badge-green" style="font-size: 0.65rem;">NDPA • GDPR • CCPA • Global Compliance</span>
+        </div>
+        <button style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="gathrApp.closeLegalModal()">✕</button>
+      </div>
+
+      <!-- Legal Navigation Tabs -->
+      <div style="display: flex; overflow-x: auto; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.3); padding: 0 1rem;">
+        <button class="legal-tab-btn active" data-doc="tos" onclick="gathrApp.switchLegalDoc('tos')">Terms of Service</button>
+        <button class="legal-tab-btn" data-doc="privacy" onclick="gathrApp.switchLegalDoc('privacy')">Global Privacy Policy</button>
+        <button class="legal-tab-btn" data-doc="dpa" onclick="gathrApp.switchLegalDoc('dpa')">Data Processing Agreement (DPA)</button>
+        <button class="legal-tab-btn" data-doc="refund" onclick="gathrApp.switchLegalDoc('refund')">Refund & Cancellation</button>
+      </div>
+
+      <!-- Legal Document Reader Body -->
+      <div id="legal-doc-body" class="legal-body-content"></div>
+
+      <div style="padding: 1rem 1.75rem; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.4); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="font-size: 0.75rem; color: var(--text-dim);">
+          Official copies located in <code>/legal</code> directory. Certified for international compliance.
+        </div>
+        <div style="display: flex; gap: 0.6rem;">
+          <button class="btn btn-secondary btn-sm" onclick="gathrApp.showToast('📋 Document copy link copied to clipboard!');">
+            Copy Document Link
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="gathrApp.closeLegalModal()">
+            Done & Return to App
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div id="toast-container" class="toast-container"></div>
 
@@ -1382,6 +1669,7 @@
   <script src="./js/radar.js"></script>
   <script src="./js/wizard.js"></script>
   <script src="./js/admin.js"></script>
+  <script src="./js/gathr-visuals.js"></script>
   <script src="./js/app.js"></script>
 </body>
 </html>
