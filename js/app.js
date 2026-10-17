@@ -36,6 +36,8 @@ class GathrApp {
     this.selectedGateway = 'stripe';
     this.currentCheckoutTotal = 0;
     this.qrTimer = null;
+    this.showingAllEvents = false;
+    this.eventsLimit = 3;
   }
 
   init() {
@@ -73,19 +75,54 @@ class GathrApp {
   setCountry(countryCode) {
     this.activeCountry = countryCode;
     this.activeCity = 'all';
+    this.showingAllEvents = false;
     const citySel = document.getElementById('city-select');
     if (citySel) {
       // Repopulate city select based on country
       if (countryCode === 'all') {
         citySel.innerHTML = `
           <option value="all">📍 All Global Cities</option>
-          <option value="New York">New York, US</option>
-          <option value="London">London, UK</option>
-          <option value="Toronto">Toronto, CA</option>
-          <option value="Lagos">Lagos, NG</option>
-          <option value="Abuja">Abuja, NG</option>
-          <option value="Nairobi">Nairobi, KE</option>
-          <option value="Accra">Accra, GH</option>
+          <optgroup label="South Africa">
+            <option value="Cape Town">Cape Town, ZA</option>
+            <option value="Johannesburg">Johannesburg, ZA</option>
+          </optgroup>
+          <optgroup label="Nigeria">
+            <option value="Lagos">Lagos, NG</option>
+            <option value="Abuja">Abuja, NG</option>
+            <option value="Port Harcourt">Port Harcourt, NG</option>
+            <option value="Calabar">Calabar, NG</option>
+            <option value="Delta">Delta (Asaba / Warri), NG</option>
+            <option value="Anambra">Anambra (Awka / Onitsha), NG</option>
+            <option value="Ilorin">Ilorin, NG</option>
+            <option value="Uyo">Uyo, NG</option>
+            <option value="Bayelsa">Bayelsa (Yenagoa), NG</option>
+          </optgroup>
+          <optgroup label="International Hubs">
+            <option value="New York">New York, US</option>
+            <option value="London">London, UK</option>
+            <option value="Toronto">Toronto, CA</option>
+            <option value="Nairobi">Nairobi, KE</option>
+            <option value="Accra">Accra, GH</option>
+          </optgroup>
+        `;
+      } else if (countryCode === 'ZA') {
+        citySel.innerHTML = `
+          <option value="all">📍 All South Africa Cities</option>
+          <option value="Cape Town">Cape Town</option>
+          <option value="Johannesburg">Johannesburg</option>
+        `;
+      } else if (countryCode === 'NG') {
+        citySel.innerHTML = `
+          <option value="all">📍 All Nigeria Cities</option>
+          <option value="Lagos">Lagos</option>
+          <option value="Abuja">Abuja</option>
+          <option value="Port Harcourt">Port Harcourt (Rivers)</option>
+          <option value="Calabar">Calabar (Cross River)</option>
+          <option value="Delta">Delta (Asaba / Warri)</option>
+          <option value="Anambra">Anambra (Awka / Onitsha)</option>
+          <option value="Ilorin">Ilorin (Kwara)</option>
+          <option value="Uyo">Uyo (Akwa Ibom)</option>
+          <option value="Bayelsa">Bayelsa (Yenagoa)</option>
         `;
       } else if (countryCode === 'US') {
         citySel.innerHTML = `<option value="all">📍 All US Cities</option><option value="New York">New York, NY</option>`;
@@ -93,8 +130,6 @@ class GathrApp {
         citySel.innerHTML = `<option value="all">📍 All UK Cities</option><option value="London">London</option>`;
       } else if (countryCode === 'CA') {
         citySel.innerHTML = `<option value="all">📍 All Canada Cities</option><option value="Toronto">Toronto, ON</option>`;
-      } else if (countryCode === 'NG') {
-        citySel.innerHTML = `<option value="all">📍 All Nigeria Cities</option><option value="Lagos">Lagos</option><option value="Abuja">Abuja</option>`;
       } else if (countryCode === 'KE') {
         citySel.innerHTML = `<option value="all">📍 All Kenya Cities</option><option value="Nairobi">Nairobi</option>`;
       } else if (countryCode === 'GH') {
@@ -162,9 +197,20 @@ class GathrApp {
     }
   }
 
+  // Toggle Show More Events (Show 3 initially, expand on click)
+  toggleShowMoreEvents() {
+    this.showingAllEvents = !this.showingAllEvents;
+    this.renderEvents();
+    if (!this.showingAllEvents) {
+      const grid = document.getElementById('events-grid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   // Render Event Cards Grid with Global Multi-Currency Conversion
   renderEvents() {
     const grid = document.getElementById('events-grid');
+    const moreContainer = document.getElementById('events-more-container');
     if (!grid) return;
 
     let filtered = this.events;
@@ -175,15 +221,21 @@ class GathrApp {
       filtered = filtered.filter(e => e.countryCode === this.activeCountry);
     }
     if (this.activeCity !== 'all') {
-      filtered = filtered.filter(e => e.city.toLowerCase() === this.activeCity.toLowerCase());
+      filtered = filtered.filter(e => {
+        const c = e.city.toLowerCase();
+        const target = this.activeCity.toLowerCase();
+        return c.includes(target) || target.includes(c);
+      });
     }
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
       filtered = filtered.filter(e => 
         e.title.toLowerCase().includes(q) || 
         e.description.toLowerCase().includes(q) || 
-        e.venue.toLowerCase().includes(q) ||
+        e.venue.toLowerCase().includes(q) || 
         e.city.toLowerCase().includes(q) ||
+        (e.state && e.state.toLowerCase().includes(q)) ||
+        (e.tags && e.tags.some(t => t.toLowerCase().includes(q))) ||
         (e.country && e.country.toLowerCase().includes(q))
       );
     }
@@ -195,13 +247,18 @@ class GathrApp {
           <button class="btn btn-secondary btn-sm" onclick="gathrApp.resetFilters()">Clear Location & Category Filters</button>
         </div>
       `;
+      if (moreContainer) moreContainer.innerHTML = '';
       return;
     }
+
+    const totalMatching = filtered.length;
+    const shouldLimit = !this.showingAllEvents && totalMatching > this.eventsLimit;
+    const displayedEvents = shouldLimit ? filtered.slice(0, this.eventsLimit) : filtered;
 
     const targetCurr = this.preferredCurrency;
     const currMeta = GATHR_CURRENCY_RATES[targetCurr] || { symbol: "$", flag: "🌐" };
 
-    grid.innerHTML = filtered.map(e => {
+    grid.innerHTML = displayedEvents.map(e => {
       const convertedMin = convertPrice(e.minPrice, e.baseCurrency, targetCurr);
       const isOriginalCurr = e.baseCurrency === targetCurr;
       const originalMeta = GATHR_CURRENCY_RATES[e.baseCurrency] || { symbol: "$" };
@@ -238,6 +295,30 @@ class GathrApp {
         </div>
       `;
     }).join('');
+
+    // Render "More Gatherings" toggle button
+    if (moreContainer) {
+      if (totalMatching > this.eventsLimit) {
+        if (!this.showingAllEvents) {
+          const remaining = totalMatching - this.eventsLimit;
+          moreContainer.innerHTML = `
+            <button class="btn btn-secondary" onclick="gathrApp.toggleShowMoreEvents()" style="padding: 0.85rem 2.2rem; font-size: 0.95rem; font-weight: 700; border-radius: 9999px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 auto;">
+              <span>Explore More Gatherings (+${remaining} more)</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          `;
+        } else {
+          moreContainer.innerHTML = `
+            <button class="btn btn-secondary btn-sm" onclick="gathrApp.toggleShowMoreEvents()" style="padding: 0.6rem 1.6rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 auto;">
+              <span>Show Fewer Gatherings</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+          `;
+        }
+      } else {
+        moreContainer.innerHTML = '';
+      }
+    }
 
     if (window.gathrVisuals) {
       window.gathrVisuals.initScrollWorld();
@@ -589,6 +670,7 @@ class GathrApp {
     this.activeCountry = 'all';
     this.activeCity = 'all';
     this.searchQuery = '';
+    this.showingAllEvents = false;
     const sInput = document.getElementById('event-search-input');
     if (sInput) sInput.value = '';
     const countrySel = document.getElementById('global-country-select');
@@ -690,6 +772,7 @@ class GathrApp {
         document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
         e.target.classList.add('active');
         this.activeCategory = e.target.dataset.cat;
+        this.showingAllEvents = false;
         this.renderEvents();
       });
     });
@@ -699,6 +782,7 @@ class GathrApp {
     if (citySelect) {
       citySelect.addEventListener('change', (e) => {
         this.activeCity = e.target.value;
+        this.showingAllEvents = false;
         this.renderEvents();
       });
     }
@@ -724,6 +808,7 @@ class GathrApp {
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         this.searchQuery = e.target.value;
+        this.showingAllEvents = false;
         this.renderEvents();
       });
     }

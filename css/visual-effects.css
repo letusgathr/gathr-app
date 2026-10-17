@@ -46,10 +46,10 @@
   background-image: url('../assets/images/african-festival-bg.jpg');
   background-size: cover;
   background-position: center 38%;
-  opacity: 0.38;
-  filter: saturate(135%) contrast(108%);
-  mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 90%);
-  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 90%);
+  opacity: 0.28;
+  filter: saturate(125%) contrast(115%) brightness(0.85);
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0) 90%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0) 90%);
   pointer-events: none;
   z-index: 0;
 }
@@ -61,8 +61,8 @@
   right: 0;
   bottom: 0;
   background: 
-    linear-gradient(180deg, rgba(8, 8, 12, 0.45) 0%, rgba(8, 8, 12, 0.72) 60%, #08080C 100%),
-    radial-gradient(circle at 50% 40%, rgba(255, 85, 0, 0.16), transparent 70%);
+    linear-gradient(180deg, rgba(6, 7, 10, 0.75) 0%, rgba(6, 7, 10, 0.86) 55%, #08080C 100%),
+    radial-gradient(circle at 50% 38%, rgba(255, 85, 0, 0.12), rgba(6, 7, 10, 0.92) 75%);
   pointer-events: none;
   z-index: 1;
 }
