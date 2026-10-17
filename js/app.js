@@ -142,9 +142,10 @@ class GathrApp {
   // View Navigation
   switchView(viewName) {
     // Role protection for Organizer Studio and Gate Scanner
-    if ((viewName === 'organizer' || viewName === 'scanner') && (!window.gathrAuth || !window.gathrAuth.isOrganizer())) {
-      if (window.gathrAuth) {
-        window.gathrAuth.promptOrganizerStudio();
+    const auth = window.gathrAuth || (typeof gathrAuth !== 'undefined' ? gathrAuth : null);
+    if ((viewName === 'organizer' || viewName === 'scanner') && (!auth || !auth.isOrganizer())) {
+      if (auth) {
+        auth.promptOrganizerStudio();
       }
       return;
     }
@@ -175,11 +176,16 @@ class GathrApp {
     });
 
     // Handle view-specific initializations
+    const scanner = window.gathrGateScanner || (typeof gathrGateScanner !== 'undefined' ? gathrGateScanner : null);
     if (viewName === 'scanner') {
       const videoEl = document.getElementById('scanner-video');
-      if (videoEl) gathrGateScanner.startCamera(videoEl);
+      if (videoEl && scanner && typeof scanner.startCamera === 'function') {
+        scanner.startCamera(videoEl);
+      }
     } else {
-      gathrGateScanner.stopCamera();
+      if (scanner && typeof scanner.stopCamera === 'function') {
+        scanner.stopCamera();
+      }
     }
 
     if (viewName === 'ticket') {
@@ -830,6 +836,7 @@ class GathrApp {
 }
 
 const gathrApp = new GathrApp();
+window.gathrApp = gathrApp;
 document.addEventListener('DOMContentLoaded', () => {
   gathrApp.init();
 });

@@ -56,9 +56,9 @@ class GathrAuth {
         window.gathrEventWizard.openWizard();
       }
     } else {
-      this.openModal('register', 'organizer');
+      this.openModal('signin', 'organizer');
       if (window.gathrApp && window.gathrApp.showToast) {
-        window.gathrApp.showToast("👋 Welcome event host! Sign in or register to publish events and manage ticket tiers.");
+        window.gathrApp.showToast("👋 Welcome event host! Please sign in or register with your Organizer account to publish events.");
       }
     }
   }
@@ -331,6 +331,7 @@ class GathrAuth {
 }
 
 const gathrAuth = new GathrAuth();
+window.gathrAuth = gathrAuth;
 document.addEventListener('DOMContentLoaded', () => {
   gathrAuth.init();
 });
