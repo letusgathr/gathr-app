@@ -1,5 +1,5 @@
 /**
- * GATHR Organizer Command Center: Eventbrite Organizer Architecture
+ * GATHR Organizer Command Center: GATHR Organizer Architecture
  * Provides dedicated Creator Studio capabilities:
  * - Real-time Gross GMV, Ticket Velocity & Gate Latency
  * - Event Switcher (Switch between multiple live events)
