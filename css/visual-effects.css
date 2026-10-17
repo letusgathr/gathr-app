@@ -43,15 +43,16 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('../assets/images/african-festival-bg.jpg');
+  background-image: url('../assets/images/concert-festival-hdr.jpg');
   background-size: cover;
-  background-position: center 38%;
-  opacity: 0.28;
-  filter: saturate(125%) contrast(115%) brightness(0.85);
-  mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0) 90%);
-  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 38%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0) 90%);
+  background-position: center 30%;
+  opacity: 0.46;
+  filter: saturate(135%) contrast(115%) brightness(0.96);
+  mask-image: radial-gradient(ellipse 98% 88% at 50% 40%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 65%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: radial-gradient(ellipse 98% 88% at 50% 40%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 65%, rgba(0,0,0,0) 100%);
   pointer-events: none;
   z-index: 0;
+  transition: opacity 0.5s ease;
 }
 
 .hero-festival-overlay {
@@ -61,8 +62,8 @@
   right: 0;
   bottom: 0;
   background: 
-    linear-gradient(180deg, rgba(6, 7, 10, 0.75) 0%, rgba(6, 7, 10, 0.86) 55%, #08080C 100%),
-    radial-gradient(circle at 50% 38%, rgba(255, 85, 0, 0.12), rgba(6, 7, 10, 0.92) 75%);
+    linear-gradient(180deg, rgba(8, 8, 12, 0.35) 0%, rgba(8, 8, 12, 0.65) 50%, #08080C 100%),
+    radial-gradient(ellipse at 50% 40%, rgba(255, 85, 0, 0.12) 0%, rgba(8, 8, 12, 0.80) 75%);
   pointer-events: none;
   z-index: 1;
 }
