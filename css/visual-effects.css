@@ -45,11 +45,11 @@
   bottom: 0;
   background-image: url('../assets/images/concert-festival-hdr.jpg');
   background-size: cover;
-  background-position: center 30%;
-  opacity: 0.46;
-  filter: saturate(135%) contrast(115%) brightness(0.96);
-  mask-image: radial-gradient(ellipse 98% 88% at 50% 40%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 65%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: radial-gradient(ellipse 98% 88% at 50% 40%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.88) 65%, rgba(0,0,0,0) 100%);
+  background-position: center 60%;
+  opacity: 0.54;
+  filter: saturate(135%) contrast(115%) brightness(1.02);
+  mask-image: radial-gradient(ellipse 98% 92% at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 72%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: radial-gradient(ellipse 98% 92% at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 72%, rgba(0,0,0,0) 100%);
   pointer-events: none;
   z-index: 0;
   transition: opacity 0.5s ease;
@@ -62,8 +62,8 @@
   right: 0;
   bottom: 0;
   background: 
-    linear-gradient(180deg, rgba(8, 8, 12, 0.35) 0%, rgba(8, 8, 12, 0.65) 50%, #08080C 100%),
-    radial-gradient(ellipse at 50% 40%, rgba(255, 85, 0, 0.12) 0%, rgba(8, 8, 12, 0.80) 75%);
+    linear-gradient(180deg, rgba(8, 8, 12, 0.30) 0%, rgba(8, 8, 12, 0.55) 46%, rgba(8, 8, 12, 0.88) 100%),
+    radial-gradient(ellipse at 50% 45%, rgba(255, 85, 0, 0.10) 0%, rgba(8, 8, 12, 0.72) 80%);
   pointer-events: none;
   z-index: 1;
 }
