@@ -374,3 +374,4 @@ class GateScanner {
 }
 
 const gathrGateScanner = new GateScanner();
+window.gathrGateScanner = gathrGateScanner;
