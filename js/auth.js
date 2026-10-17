@@ -13,6 +13,54 @@ class GathrAuth {
 
   init() {
     this.renderHeader();
+    this.syncRoleUI();
+  }
+
+  isOrganizer() {
+    return !!(this.currentUser && this.currentUser.role === 'organizer');
+  }
+
+  syncRoleUI() {
+    const isOrg = this.isOrganizer();
+    if (document.body) {
+      document.body.classList.toggle('role-organizer', isOrg);
+    }
+    document.querySelectorAll('.organizer-nav-item').forEach(el => {
+      el.style.display = isOrg ? 'flex' : 'none';
+    });
+  }
+
+  promptOrganizerStudio() {
+    if (this.isOrganizer()) {
+      if (window.gathrApp) {
+        window.gathrApp.switchView('organizer');
+      }
+    } else {
+      this.openModal('signin', 'organizer');
+      if (window.gathrApp && window.gathrApp.showToast) {
+        window.gathrApp.showToast("🔒 Organizer Workspace: Sign in or register to access Creator Studio.");
+      }
+    }
+  }
+
+  promptSwitchToOrganizer() {
+    this.openModal('register', 'organizer');
+    if (window.gathrApp && window.gathrApp.showToast) {
+      window.gathrApp.showToast("⚡ Set up your Organizer brand to start publishing events and tracking sales.");
+    }
+  }
+
+  handleHostEventClick() {
+    if (this.isOrganizer()) {
+      if (window.gathrEventWizard) {
+        window.gathrEventWizard.openWizard();
+      }
+    } else {
+      this.openModal('register', 'organizer');
+      if (window.gathrApp && window.gathrApp.showToast) {
+        window.gathrApp.showToast("👋 Welcome event host! Sign in or register to publish events and manage ticket tiers.");
+      }
+    }
   }
 
   loadSession() {
@@ -39,6 +87,7 @@ class GathrAuth {
       console.warn('Could not save auth session to localStorage', e);
     }
     this.renderHeader();
+    this.syncRoleUI();
   }
 
   openModal(mode = 'signin', role = 'organizer') {
@@ -248,12 +297,18 @@ class GathrAuth {
               <button onclick="gathrApp.switchView('organizer'); gathrAuth.toggleProfileDropdown();" style="width: 100%; text-align: left; background: none; border: none; color: #FFF; padding: 0.5rem 0.65rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.background='rgba(255,85,0,0.15)'" onmouseout="this.style.background='none'">
                 <span>📊</span> Organizer Studio
               </button>
+              <button onclick="gathrApp.switchView('scanner'); gathrAuth.toggleProfileDropdown();" style="width: 100%; text-align: left; background: none; border: none; color: #FFF; padding: 0.5rem 0.65rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.background='rgba(255,85,0,0.15)'" onmouseout="this.style.background='none'">
+                <span>📱</span> Door Scanner HUD
+              </button>
               <button onclick="gathrEventWizard.openWizard(); gathrAuth.toggleProfileDropdown();" style="width: 100%; text-align: left; background: none; border: none; color: #FFF; padding: 0.5rem 0.65rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.background='rgba(255,85,0,0.15)'" onmouseout="this.style.background='none'">
                 <span>➕</span> Create New Event
               </button>
             ` : `
               <button onclick="gathrApp.switchView('ticket'); gathrAuth.toggleProfileDropdown();" style="width: 100%; text-align: left; background: none; border: none; color: #FFF; padding: 0.5rem 0.65rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.background='rgba(255,85,0,0.15)'" onmouseout="this.style.background='none'">
                 <span>🎟️</span> My Digital Passes
+              </button>
+              <button onclick="gathrAuth.promptSwitchToOrganizer(); gathrAuth.toggleProfileDropdown();" style="width: 100%; text-align: left; background: none; border: none; color: var(--brand-orange-light); padding: 0.5rem 0.65rem; font-size: 0.8rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.background='rgba(255,85,0,0.15)'" onmouseout="this.style.background='none'">
+                <span>⚡</span> Switch to Organizer Mode
               </button>
             `}
 

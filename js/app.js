@@ -141,6 +141,14 @@ class GathrApp {
 
   // View Navigation
   switchView(viewName) {
+    // Role protection for Organizer Studio and Gate Scanner
+    if ((viewName === 'organizer' || viewName === 'scanner') && (!window.gathrAuth || !window.gathrAuth.isOrganizer())) {
+      if (window.gathrAuth) {
+        window.gathrAuth.promptOrganizerStudio();
+      }
+      return;
+    }
+
     this.currentView = viewName;
     
     // Hide all view panels
