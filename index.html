@@ -413,6 +413,7 @@
               <div class="ticket-meta-col">
                 <span class="ticket-meta-label">Attendee</span>
                 <span id="pass-attendee-name" class="ticket-meta-val">Chinedu Eze</span>
+                <span id="pass-attendee-contact" style="font-size: 0.72rem; color: var(--text-dim); display: block; margin-top: 0.2rem;"></span>
               </div>
               <div class="ticket-meta-col">
                 <span class="ticket-meta-label">Ticket Code</span>
@@ -1355,15 +1356,19 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.75rem;">
             <div>
               <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Full Name</label>
               <input type="text" id="checkout-name" class="search-input" style="padding-left: 1rem;" placeholder="e.g. Chinedu Eze" required>
             </div>
             <div>
-              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Email for Pass Delivery</label>
-              <input type="email" id="checkout-email" class="search-input" style="padding-left: 1rem;" placeholder="chinedu@example.com" required>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Email OR Phone Number</label>
+              <input type="text" id="checkout-email" class="search-input" style="padding-left: 1rem;" placeholder="e.g. 08012345678 or email" required>
             </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.76rem; color: var(--accent-green); margin-bottom: 1.25rem;">
+            <span>📱</span>
+            <span>Passes are delivered via WhatsApp / SMS or Email. No email needed to attend!</span>
           </div>
 
           <!-- Price Breakdown -->
@@ -1713,80 +1718,201 @@
        ========================================== -->
   <div id="auth-modal" class="meeting-modal-overlay" style="display: none;" onclick="gathrAuth.closeModal()">
     <div class="auth-modal-card" onclick="event.stopPropagation()">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <div style="display: flex; align-items: center; gap: 0.6rem;">
-          <img src="./assets/images/logo.png" alt="GATHR" style="width: 28px; height: 28px; border-radius: 6px;">
-          <h3 id="auth-modal-title" style="font-size: 1.2rem; font-weight: 800; color: #FFF; margin: 0; font-family: var(--font-display);">
-            Organizer Portal Sign In
-          </h3>
+      
+      <!-- Top Brand Header & Close Button -->
+      <div class="auth-header-simplistic">
+        <div class="auth-brand-logo-group">
+          <img src="./assets/images/logo.png" alt="GATHR" style="width: 32px; height: 32px; border-radius: 8px;">
+          <span class="auth-brand-name">gathr</span>
         </div>
-        <button style="background: transparent; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; padding: 0.2rem;" onclick="gathrAuth.closeModal()">✕</button>
+        <button class="auth-close-x" onclick="gathrAuth.closeModal()" aria-label="Close modal">✕</button>
       </div>
 
-      <!-- Mode Switch: Sign In vs Create Account -->
-      <div class="auth-mode-switch">
-        <button id="auth-tab-signin" class="auth-tab-btn active" onclick="gathrAuth.switchMode('signin')">Sign In</button>
-        <button id="auth-tab-register" class="auth-tab-btn" onclick="gathrAuth.switchMode('register')">Create Account</button>
-      </div>
-
-      <!-- Role Selector: Attendee vs Organizer -->
-      <div class="auth-role-selector">
-        <button id="auth-role-organizer" class="auth-role-btn active" onclick="gathrAuth.switchRole('organizer')">
-          <span style="font-size: 1.25rem;">⚡</span>
-          <strong>Event Organizer</strong>
-          <span>Create & sell tickets</span>
-        </button>
-        <button id="auth-role-attendee" class="auth-role-btn" onclick="gathrAuth.switchRole('attendee')">
-          <span style="font-size: 1.25rem;">🎟️</span>
-          <strong>Attendee</strong>
-          <span>Access passes & check-in</span>
-        </button>
-      </div>
-
-      <!-- One-Click Social Authentications -->
-      <button class="social-auth-btn" type="button" onclick="gathrAuth.handleSocialAuth('Google')">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.7 0-1.1.2-1.9.4-2.7L1.6 6.4C.6 8.3 0 10.1 0 12s.6 3.7 1.6 5.6l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"/></svg>
-        <span>Continue with Google</span>
-      </button>
-
-      <button class="social-auth-btn" type="button" onclick="gathrAuth.handleSocialAuth('Apple')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.38c.62-.75 1.04-1.8 1.01-2.85-.92.04-2.04.62-2.7 1.39-.58.67-1.09 1.74-1.02 2.78 1.03.08 2.09-.57 2.71-1.32z"/></svg>
-        <span>Continue with Apple</span>
-      </button>
-
-      <div class="auth-divider">
-        <span>or magic email link</span>
-      </div>
-
-      <!-- Auth Form -->
-      <form id="auth-form" onsubmit="gathrAuth.handleSubmit(event)">
-        <div id="auth-name-field" class="auth-input-group" style="display: none;">
-          <label for="auth-name-input">Full Name / Primary Contact</label>
-          <input type="text" id="auth-name-input" class="auth-input" placeholder="e.g. Sarah Jenkins">
+      <!-- Main Sign-In Screen -->
+      <div id="auth-main-screen" class="auth-screen-view">
+        <div class="auth-welcome-heading">
+          <h2 class="auth-title-large">Welcome!</h2>
+          <h3 id="auth-sub-prompt" class="auth-subtitle-large">What’s your email or phone number?</h3>
         </div>
 
-        <div id="auth-org-field" class="auth-input-group">
-          <label for="auth-org-input">Organization / Creator Brand</label>
-          <input type="text" id="auth-org-input" class="auth-input" placeholder="e.g. Mainland Block Party & LiveNation">
+        <!-- Role Selector: Attendee First, Organizer Second -->
+        <div class="auth-role-tabs">
+          <button type="button" id="auth-role-attendee" class="auth-role-tab active" onclick="gathrAuth.switchRole('attendee')">
+            🎟️ Attendee (Passes & Tickets)
+          </button>
+          <button type="button" id="auth-role-organizer" class="auth-role-tab" onclick="gathrAuth.switchRole('organizer')">
+            ⚡ Event Organizer
+          </button>
         </div>
 
-        <div class="auth-input-group">
-          <label for="auth-email-input">Account / Work Email</label>
-          <input type="email" id="auth-email-input" class="auth-input" placeholder="organizer@letusgather.online" required>
+        <!-- Auth Form: Single Smart Input (Email or Phone Number) -->
+        <form id="auth-form" onsubmit="gathrAuth.handleSubmit(event)">
+          <!-- Organizer Creator Brand Field (only shown if Organizer role selected) -->
+          <div id="auth-org-field" class="auth-field-group" style="display: none;">
+            <label for="auth-org-input" class="auth-label">Organization / Creator Brand</label>
+            <input type="text" id="auth-org-input" class="auth-input-clean" placeholder="e.g. Mainland Block Party & LiveNation">
+          </div>
+
+          <!-- Name Field (optional / shown if Organizer or registration) -->
+          <div id="auth-name-field" class="auth-field-group" style="display: none;">
+            <label for="auth-name-input" class="auth-label">Full Name</label>
+            <input type="text" id="auth-name-input" class="auth-input-clean" placeholder="e.g. Chinedu Eze">
+          </div>
+
+          <!-- Main Identifier Input: Email address or phone number -->
+          <div class="auth-field-group">
+            <input 
+              type="text" 
+              id="auth-identifier-input" 
+              class="auth-input-clean" 
+              placeholder="Email address or phone number" 
+              autocomplete="username"
+              required
+            >
+          </div>
+
+          <!-- Password Field (revealed when toggling password mode) -->
+          <div id="auth-password-field" class="auth-field-group" style="display: none;">
+            <input 
+              type="password" 
+              id="auth-password-input" 
+              class="auth-input-clean" 
+              placeholder="Enter your password" 
+              autocomplete="current-password"
+            >
+          </div>
+
+          <!-- Primary High-Contrast Pill Button -->
+          <button type="submit" id="auth-submit-btn" class="auth-primary-pill-btn">
+            Continue with one time code
+          </button>
+        </form>
+
+        <!-- Continue with password instead -->
+        <div class="auth-sublink-wrap">
+          <button type="button" id="auth-password-toggle-btn" class="auth-blue-link" onclick="gathrAuth.togglePasswordMode()">
+            Continue with password instead
+          </button>
         </div>
 
-        <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%; padding: 0.8rem; font-weight: 700; border-radius: 8px; justify-content: center; margin-top: 0.5rem;">
-          Sign In with Magic Link
-        </button>
-      </form>
+        <!-- Divider: Or sign in with -->
+        <div class="auth-divider-clean">
+          <span>Or sign in with</span>
+        </div>
 
-      <!-- Quick Demo Fill for Fast Testing -->
-      <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 0.72rem; color: var(--text-dim);">Testing GATHR?</span>
-        <button type="button" onclick="gathrAuth.quickFillDemo('organizer')" style="background: none; border: none; color: var(--brand-orange-light); font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
-          ⚡ Auto-fill Organizer Demo
-        </button>
+        <!-- Terms Disclaimer: Exact User Requested Text -->
+        <p class="auth-legal-disclaimer">
+          By selecting Continue with Google, Apple, you agree to GATHR's <a href="javascript:void(0)" onclick="gathrApp.openLegalModal('tos')">Terms of Service</a> and <a href="javascript:void(0)" onclick="gathrApp.openLegalModal('privacy')">Privacy Policy</a>.
+        </p>
+
+        <!-- One-Click Social Authentications (Outlined Pill Buttons) -->
+        <div class="auth-social-list">
+          <button type="button" class="auth-social-pill" onclick="gathrAuth.handleSocialAuth('Google')">
+            <span class="auth-social-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.7 0-1.1.2-1.9.4-2.7L1.6 6.4C.6 8.3 0 10.1 0 12s.6 3.7 1.6 5.6l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"/></svg>
+            </span>
+            <span>Continue with Google</span>
+          </button>
+
+          <button type="button" class="auth-social-pill" onclick="gathrAuth.handleSocialAuth('Apple')">
+            <span class="auth-social-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.38c.62-.75 1.04-1.8 1.01-2.85-.92.04-2.04.62-2.7 1.39-.58.67-1.09 1.74-1.02 2.78 1.03.08 2.09-.57 2.71-1.32z"/></svg>
+            </span>
+            <span>Continue with Apple</span>
+          </button>
+
+          <button type="button" class="auth-social-pill" onclick="gathrAuth.handleSocialAuth('WhatsApp')">
+            <span class="auth-social-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.12-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.49-.4-.42-.56-.43h-.47c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.03 2.61c.12.17 1.77 2.7 4.28 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29z"/></svg>
+            </span>
+            <span>Continue with WhatsApp / Phone</span>
+          </button>
+        </div>
+
+        <!-- Need help finding your tickets? -->
+        <div style="text-align: center; margin-top: 1.25rem;">
+          <button type="button" class="auth-blue-link" style="font-weight: 600; font-size: 0.95rem;" onclick="gathrAuth.openTicketFinder()">
+            Need help finding your tickets?
+          </button>
+        </div>
+
+        <!-- Organizer Switch Link -->
+        <div id="auth-organizer-switch-wrap" style="text-align: center; margin-top: 1.15rem; padding-top: 0.85rem; border-top: 1px solid #E5E7EB;">
+          <button type="button" id="auth-organizer-toggle-btn" style="background: none; border: none; color: #4B5563; font-size: 0.82rem; font-weight: 600; cursor: pointer;" onclick="gathrAuth.toggleOrganizerMode()">
+            Host an event? <span style="color: #FF5500; text-decoration: underline;">Switch to Organizer Studio</span>
+          </button>
+        </div>
       </div>
+
+      <!-- Ticket Finder Screen (For attendees retrieving tickets by Phone or Email) -->
+      <div id="auth-finder-screen" class="auth-screen-view" style="display: none;">
+        <div class="auth-welcome-heading">
+          <h2 class="auth-title-large">Find My Tickets</h2>
+          <p style="color: #4B5563; font-size: 0.9rem; margin-top: 0.35rem; line-height: 1.5;">
+            Enter the phone number or email you used when booking. We will locate your active passes immediately.
+          </p>
+        </div>
+
+        <form onsubmit="gathrAuth.handleTicketFinderSubmit(event)">
+          <div class="auth-field-group">
+            <input 
+              type="text" 
+              id="auth-finder-input" 
+              class="auth-input-clean" 
+              placeholder="Phone number or email address" 
+              required
+            >
+          </div>
+
+          <button type="submit" class="auth-primary-pill-btn">
+            Locate & View My Passes →
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.25rem;">
+          <button type="button" class="auth-blue-link" onclick="gathrAuth.showMainScreen()">
+            ← Back to Sign In
+          </button>
+        </div>
+      </div>
+
+      <!-- OTP Verification Screen -->
+      <div id="auth-otp-screen" class="auth-screen-view" style="display: none;">
+        <div class="auth-welcome-heading">
+          <h2 class="auth-title-large">Enter One-Time Code</h2>
+          <p id="auth-otp-prompt-text" style="color: #4B5563; font-size: 0.9rem; margin-top: 0.35rem; line-height: 1.5;">
+            We sent a 6-digit code to your phone/email.
+          </p>
+        </div>
+
+        <form onsubmit="gathrAuth.handleOtpSubmit(event)">
+          <div class="auth-field-group">
+            <input 
+              type="text" 
+              id="auth-otp-input" 
+              class="auth-input-clean" 
+              placeholder="Enter 6-digit code (e.g. 748201)" 
+              maxlength="6"
+              style="letter-spacing: 0.25em; text-align: center; font-size: 1.25rem; font-weight: 700;"
+              required
+            >
+          </div>
+
+          <button type="submit" class="auth-primary-pill-btn">
+            Verify & Access Passes
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.15rem; display: flex; justify-content: space-between; align-items: center;">
+          <button type="button" class="auth-blue-link" onclick="gathrAuth.resendOtp()">
+            Resend Code
+          </button>
+          <button type="button" class="auth-blue-link" onclick="gathrAuth.showMainScreen()">
+            Change Phone/Email
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 

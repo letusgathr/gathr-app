@@ -449,14 +449,17 @@ Prefer fewer deployables at launch. The scanner can be a route/app mode within t
 Resolve these decisions with the product owner and pilot organizers before building provider-dependent or financially regulated features.
 
 
-3. Outstanding Features to Make GATHR Marketable & Dominant
-To outcompete Eventbrite, Luma, Dice, and Tix.africa, GATHR should introduce these high-leverage features:
+### 3. Outstanding Features to Make GATHR Marketable & Dominant
+To outcompete Eventbrite, Luma, Dice, and Tix.africa, GATHR includes these high-leverage features:
 
-"WhatsApp-First" Native Experience (Emerging Market Differentiator)
-Deliver tickets and Apple/Google Wallet passes instantly via an automated WhatsApp bot.
-Send pre-event updates (directions, parking, entry reminders) directly through WhatsApp, boosting open rates from ~20% (email) to >95%.
-Dynamic "Anti-Screenshot" Rolling QR Codes
-Rolling TOTP QR codes that regenerate every 15–30 seconds with an animated live timestamp, rendering forwarded screenshots useless to fraudsters.
+- **Simplistic "Attendee-First" Phone & Email Identity:**
+  A frictionless, Eventbrite-inspired sign-in flow that places attendees first. Supports authentication and checkout via either **Phone Number or Email Address**, ensuring that attendees without email addresses can effortlessly obtain tickets, verify via one-time codes (OTP), and retrieve dynamic QR passes with zero friction.
+
+- **"WhatsApp & SMS-First" Native Delivery (Emerging Market Differentiator):**
+  Deliver cryptographic passes and rolling TOTP tickets instantly to phone numbers via an automated WhatsApp bot or SMS. Send pre-event updates (directions, parking, entry reminders) directly through WhatsApp/SMS, boosting open rates from ~20% (email) to >95%.
+
+- **Dynamic "Anti-Screenshot" Rolling QR Codes:**
+  Rolling TOTP QR codes that regenerate every 20 seconds with cryptographic HMAC verification, rendering forwarded screenshots useless to scalpers and fraudsters.
 "Gathr Radar": Intent-Based Micro-Networking
 “Most event apps end at check-in; GATHR begins at check-in.”
 Attendees specify what they do and who they want to meet; 24 hours prior, GATHR suggests 3 curated connections and an AI-generated icebreaker.

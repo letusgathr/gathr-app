@@ -1,14 +1,17 @@
 /**
- * GATHR Authentication & Identity Engine (Attendee & Organizer Mode)
- * Supports Email Magic Link, One-Click Social Auth, Role Switching & Session Persistence
+ * GATHR Authentication & Identity Engine (Simplistic Eventbrite Pattern)
+ * Attendee First • Email OR Phone Number Support • One-Time Code OTP
  */
 
 class GathrAuth {
   constructor() {
     this.storageKey = 'gathr_auth_session';
     this.currentUser = this.loadSession();
-    this.currentMode = 'signin'; // 'signin' | 'register'
-    this.selectedRole = 'organizer'; // 'organizer' | 'attendee'
+    this.currentMode = 'signin';
+    this.selectedRole = 'attendee'; // Attendee is FIRST & default
+    this.passwordMode = false;
+    this.currentScreen = 'main'; // 'main' | 'finder' | 'otp'
+    this.pendingIdentifier = '';
   }
 
   init() {
@@ -38,15 +41,15 @@ class GathrAuth {
     } else {
       this.openModal('signin', 'organizer');
       if (window.gathrApp && window.gathrApp.showToast) {
-        window.gathrApp.showToast("🔒 Organizer Workspace: Sign in or register to access Creator Studio.");
+        window.gathrApp.showToast("🔒 Organizer Workspace: Sign in to access Creator Studio.");
       }
     }
   }
 
   promptSwitchToOrganizer() {
-    this.openModal('register', 'organizer');
+    this.openModal('signin', 'organizer');
     if (window.gathrApp && window.gathrApp.showToast) {
-      window.gathrApp.showToast("⚡ Set up your Organizer brand to start publishing events and tracking sales.");
+      window.gathrApp.showToast("⚡ Set up or access your Organizer Workspace.");
     }
   }
 
@@ -58,7 +61,7 @@ class GathrAuth {
     } else {
       this.openModal('signin', 'organizer');
       if (window.gathrApp && window.gathrApp.showToast) {
-        window.gathrApp.showToast("👋 Welcome event host! Please sign in or register with your Organizer account to publish events.");
+        window.gathrApp.showToast("👋 Welcome event host! Sign in with your organizer account to publish gatherings.");
       }
     }
   }
@@ -90,13 +93,21 @@ class GathrAuth {
     this.syncRoleUI();
   }
 
-  openModal(mode = 'signin', role = 'organizer') {
+  // Open Modal - defaults strictly to ATTENDEE first
+  openModal(mode = 'signin', role = 'attendee') {
     this.currentMode = mode;
     this.selectedRole = role;
+    this.passwordMode = false;
+    this.showMainScreen();
     this.updateModalUI();
+
     const modal = document.getElementById('auth-modal');
     if (modal) {
       modal.style.display = 'flex';
+      setTimeout(() => {
+        const input = document.getElementById('auth-identifier-input');
+        if (input) input.focus();
+      }, 100);
     }
   }
 
@@ -107,57 +118,252 @@ class GathrAuth {
     }
   }
 
-  switchMode(mode) {
-    this.currentMode = mode;
-    this.updateModalUI();
-  }
-
   switchRole(role) {
     this.selectedRole = role;
     this.updateModalUI();
   }
 
+  toggleOrganizerMode() {
+    this.selectedRole = (this.selectedRole === 'attendee') ? 'organizer' : 'attendee';
+    this.updateModalUI();
+  }
+
+  togglePasswordMode() {
+    this.passwordMode = !this.passwordMode;
+    const pwdField = document.getElementById('auth-password-field');
+    const submitBtn = document.getElementById('auth-submit-btn');
+    const toggleBtn = document.getElementById('auth-password-toggle-btn');
+
+    if (pwdField) {
+      pwdField.style.display = this.passwordMode ? 'block' : 'none';
+      if (this.passwordMode) {
+        const pwdInput = document.getElementById('auth-password-input');
+        if (pwdInput) pwdInput.focus();
+      }
+    }
+
+    if (submitBtn) {
+      submitBtn.textContent = this.passwordMode ? 'Sign In' : 'Continue with one time code';
+    }
+
+    if (toggleBtn) {
+      toggleBtn.textContent = this.passwordMode ? 'Continue with one-time code instead' : 'Continue with password instead';
+    }
+  }
+
+  showMainScreen() {
+    this.currentScreen = 'main';
+    const mainScreen = document.getElementById('auth-main-screen');
+    const finderScreen = document.getElementById('auth-finder-screen');
+    const otpScreen = document.getElementById('auth-otp-screen');
+
+    if (mainScreen) mainScreen.style.display = 'block';
+    if (finderScreen) finderScreen.style.display = 'none';
+    if (otpScreen) otpScreen.style.display = 'none';
+  }
+
+  openTicketFinder() {
+    this.currentScreen = 'finder';
+    const mainScreen = document.getElementById('auth-main-screen');
+    const finderScreen = document.getElementById('auth-finder-screen');
+    const otpScreen = document.getElementById('auth-otp-screen');
+
+    if (mainScreen) mainScreen.style.display = 'none';
+    if (finderScreen) finderScreen.style.display = 'block';
+    if (otpScreen) otpScreen.style.display = 'none';
+
+    const finderInput = document.getElementById('auth-finder-input');
+    const idInput = document.getElementById('auth-identifier-input');
+    if (finderInput) {
+      if (idInput && idInput.value.trim()) {
+        finderInput.value = idInput.value.trim();
+      }
+      setTimeout(() => finderInput.focus(), 80);
+    }
+  }
+
+  showOtpScreen(identifier) {
+    this.currentScreen = 'otp';
+    this.pendingIdentifier = identifier;
+
+    const mainScreen = document.getElementById('auth-main-screen');
+    const finderScreen = document.getElementById('auth-finder-screen');
+    const otpScreen = document.getElementById('auth-otp-screen');
+    const promptText = document.getElementById('auth-otp-prompt-text');
+
+    if (mainScreen) mainScreen.style.display = 'none';
+    if (finderScreen) finderScreen.style.display = 'none';
+    if (otpScreen) otpScreen.style.display = 'block';
+
+    const isPhone = !identifier.includes('@');
+    if (promptText) {
+      promptText.innerHTML = `We sent a 6-digit verification code to <strong>${identifier}</strong> via ${isPhone ? 'SMS / WhatsApp' : 'one-time code'}.`;
+    }
+
+    const otpInput = document.getElementById('auth-otp-input');
+    if (otpInput) {
+      otpInput.value = '748201'; // Pre-filled instant test code for effortless verification
+      setTimeout(() => otpInput.focus(), 80);
+    }
+
+    if (window.gathrApp && window.gathrApp.showToast) {
+      window.gathrApp.showToast(`📱 Verification code sent to ${identifier} (Code: 748201)`);
+    }
+  }
+
   updateModalUI() {
-    const isRegister = this.currentMode === 'register';
     const isOrganizer = this.selectedRole === 'organizer';
 
-    // Update main mode tabs
-    const signinTab = document.getElementById('auth-tab-signin');
-    const registerTab = document.getElementById('auth-tab-register');
-    if (signinTab) signinTab.classList.toggle('active', !isRegister);
-    if (registerTab) registerTab.classList.toggle('active', isRegister);
-
-    // Update role buttons
+    // Role tabs (Attendee is first)
     const roleAttendee = document.getElementById('auth-role-attendee');
     const roleOrganizer = document.getElementById('auth-role-organizer');
     if (roleAttendee) roleAttendee.classList.toggle('active', !isOrganizer);
     if (roleOrganizer) roleOrganizer.classList.toggle('active', isOrganizer);
 
-    // Toggle fields specific to Registration or Organizer
+    // Organization Brand Field (only shown if Organizer)
     const orgField = document.getElementById('auth-org-field');
     if (orgField) {
-      orgField.style.display = (isRegister || isOrganizer) ? 'block' : 'none';
+      orgField.style.display = isOrganizer ? 'block' : 'none';
     }
 
+    // Name field
     const nameField = document.getElementById('auth-name-field');
     if (nameField) {
-      nameField.style.display = isRegister ? 'block' : 'none';
+      nameField.style.display = isOrganizer ? 'block' : 'none';
     }
 
-    const titleEl = document.getElementById('auth-modal-title');
-    if (titleEl) {
-      if (isRegister) {
-        titleEl.textContent = isOrganizer ? 'Create Organizer Account' : 'Create Attendee Account';
+    // Subtitle prompt
+    const promptEl = document.getElementById('auth-sub-prompt');
+    if (promptEl) {
+      promptEl.textContent = isOrganizer
+        ? "What's your organizer email or phone?"
+        : "What’s your email or phone number?";
+    }
+
+    // Switch link at bottom
+    const toggleBtn = document.getElementById('auth-organizer-toggle-btn');
+    if (toggleBtn) {
+      toggleBtn.innerHTML = isOrganizer
+        ? `← <span style="color: #FF5500; text-decoration: underline;">Back to Attendee Portal</span>`
+        : `Host an event? <span style="color: #FF5500; text-decoration: underline;">Switch to Organizer Studio</span>`;
+    }
+  }
+
+  handleSubmit(e) {
+    if (e) e.preventDefault();
+
+    const idInput = document.getElementById('auth-identifier-input');
+    const nameInput = document.getElementById('auth-name-input');
+    const orgInput = document.getElementById('auth-org-input');
+    const pwdInput = document.getElementById('auth-password-input');
+
+    const identifier = idInput ? idInput.value.trim() : '';
+    if (!identifier) {
+      if (window.gathrApp && window.gathrApp.showToast) {
+        window.gathrApp.showToast('⚠️ Please enter your email address or phone number.');
       } else {
-        titleEl.textContent = isOrganizer ? 'Organizer Portal Sign In' : 'Attendee Sign In';
+        alert('Please enter your email address or phone number.');
+      }
+      return;
+    }
+
+    // Determine type: Email or Phone
+    const isEmail = identifier.includes('@');
+    const isPhone = !isEmail && /[\d\s+\-()]{6,}/.test(identifier);
+
+    if (!isEmail && !isPhone) {
+      if (window.gathrApp && window.gathrApp.showToast) {
+        window.gathrApp.showToast('⚠️ Please enter a valid email or phone number (+234...).');
+      } else {
+        alert('Please enter a valid email address or phone number.');
+      }
+      return;
+    }
+
+    // If not in password mode, trigger clean OTP screen
+    if (!this.passwordMode) {
+      this.showOtpScreen(identifier);
+      return;
+    }
+
+    // Password mode direct authentication
+    this.executeSignIn(identifier, 'password');
+  }
+
+  handleOtpSubmit(e) {
+    if (e) e.preventDefault();
+    const otpInput = document.getElementById('auth-otp-input');
+    const code = otpInput ? otpInput.value.trim() : '';
+
+    if (!code || code.length < 4) {
+      if (window.gathrApp && window.gathrApp.showToast) {
+        window.gathrApp.showToast('⚠️ Please enter the one-time code sent to your phone/email.');
+      }
+      return;
+    }
+
+    this.executeSignIn(this.pendingIdentifier || '08012345678', 'otp');
+  }
+
+  resendOtp() {
+    if (window.gathrApp && window.gathrApp.showToast) {
+      window.gathrApp.showToast(`📲 Code resent to ${this.pendingIdentifier || 'your phone/email'}! (Code: 748201)`);
+    }
+  }
+
+  executeSignIn(identifier, provider = 'otp') {
+    const nameInput = document.getElementById('auth-name-input');
+    const orgInput = document.getElementById('auth-org-input');
+
+    const isEmail = identifier.includes('@');
+    const isOrganizer = this.selectedRole === 'organizer';
+
+    let formattedName = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : '';
+    if (!formattedName) {
+      if (isOrganizer) {
+        formattedName = 'Event Organizer';
+      } else if (isEmail) {
+        const username = identifier.split('@')[0];
+        formattedName = username.charAt(0).toUpperCase() + username.slice(1);
+      } else {
+        formattedName = `Passholder (${identifier})`;
       }
     }
 
-    const submitBtn = document.getElementById('auth-submit-btn');
-    if (submitBtn) {
-      submitBtn.textContent = isRegister 
-        ? (isOrganizer ? 'Create Organizer Workspace' : 'Create Attendee Account')
-        : 'Sign In with Magic Link';
+    const org = (orgInput && orgInput.value.trim()) ? orgInput.value.trim() : (isOrganizer ? 'GATHR Creator Studio' : null);
+
+    const user = {
+      id: 'usr_' + Math.random().toString(36).substr(2, 9),
+      name: formattedName,
+      identifier: identifier,
+      email: isEmail ? identifier : null,
+      phone: !isEmail ? identifier : null,
+      role: this.selectedRole,
+      provider: provider,
+      organization: org,
+      avatar: isOrganizer ? '🏢' : '👤',
+      signedInAt: new Date().toLocaleTimeString()
+    };
+
+    this.saveSession(user);
+    this.closeModal();
+
+    const contactType = isEmail ? 'email' : 'phone';
+    if (window.gathrApp && window.gathrApp.showToast) {
+      window.gathrApp.showToast(`🎉 Welcome, ${user.name}! Verified via ${contactType} (${identifier}).`);
+    }
+
+    // Role-dependent routing
+    if (user.role === 'organizer') {
+      if (window.gathrApp) {
+        window.gathrApp.switchView('organizer');
+      }
+    } else {
+      // For Attendees: check if there's an active ticket, otherwise explore
+      if (window.gathrApp && window.gathrApp.userTicket) {
+        window.gathrApp.switchView('ticket');
+        window.gathrApp.renderUserTicket();
+      }
     }
   }
 
@@ -165,12 +371,15 @@ class GathrAuth {
     const isOrganizer = this.selectedRole === 'organizer';
     const name = isOrganizer ? 'LiveNation Africa' : 'Chinedu Eze';
     const email = isOrganizer ? 'events@livenation.africa' : 'chinedu@gmail.com';
+    const phone = isOrganizer ? '+234 803 100 2000' : '+234 801 234 5678';
 
     const user = {
       id: 'usr_' + Math.random().toString(36).substr(2, 9),
       name: name,
-      email: email,
-      role: this.selectedRole,
+      identifier: provider === 'WhatsApp' ? phone : email,
+      email: provider === 'WhatsApp' ? null : email,
+      phone: provider === 'WhatsApp' ? phone : '+234 801 234 5678',
+      role: this.selectedRole, // Defaults to 'attendee'
       provider: provider,
       organization: isOrganizer ? 'LiveNation Africa' : null,
       avatar: isOrganizer ? '🏢' : '👤',
@@ -189,60 +398,47 @@ class GathrAuth {
     }
   }
 
-  quickFillDemo(role = 'organizer') {
-    const emailInput = document.getElementById('auth-email-input');
-    const nameInput = document.getElementById('auth-name-input');
-    const orgInput = document.getElementById('auth-org-input');
-
-    this.switchRole(role);
-
-    if (role === 'organizer') {
-      if (emailInput) emailInput.value = 'organizer@letusgather.online';
-      if (nameInput) nameInput.value = 'Sarah & Tunde Ventures';
-      if (orgInput) orgInput.value = 'Mainland Block Party & LiveNation';
-    } else {
-      if (emailInput) emailInput.value = 'attendee@gathr.app';
-      if (nameInput) nameInput.value = 'Chinedu Eze';
-      if (orgInput) orgInput.value = '';
-    }
-  }
-
-  handleSubmit(e) {
+  handleTicketFinderSubmit(e) {
     if (e) e.preventDefault();
+    const input = document.getElementById('auth-finder-input');
+    const contact = input ? input.value.trim() : '';
 
-    const emailInput = document.getElementById('auth-email-input');
-    const nameInput = document.getElementById('auth-name-input');
-    const orgInput = document.getElementById('auth-org-input');
-
-    const email = emailInput ? emailInput.value.trim() : '';
-    if (!email) {
-      alert('Please enter your email address.');
+    if (!contact) {
+      if (window.gathrApp && window.gathrApp.showToast) {
+        window.gathrApp.showToast('⚠️ Please enter your phone number or email.');
+      }
       return;
     }
 
-    const name = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : (this.selectedRole === 'organizer' ? 'Event Organizer' : 'Attendee');
-    const org = (orgInput && orgInput.value.trim()) ? orgInput.value.trim() : (this.selectedRole === 'organizer' ? 'GATHR Creator Studio' : null);
-
-    const user = {
-      id: 'usr_' + Math.random().toString(36).substr(2, 9),
-      name: name,
-      email: email,
-      role: this.selectedRole,
-      provider: 'email',
-      organization: org,
-      avatar: this.selectedRole === 'organizer' ? '🏢' : '👤',
-      signedInAt: new Date().toLocaleTimeString()
-    };
-
-    this.saveSession(user);
-    this.closeModal();
-
-    if (window.gathrApp && window.gathrApp.showToast) {
-      window.gathrApp.showToast(`🎉 Welcome, ${user.name}! Authenticated as ${user.role === 'organizer' ? 'Organizer' : 'Attendee'}.`);
+    // Ensure user session exists for this contact
+    if (!this.currentUser) {
+      this.executeSignIn(contact, 'ticket-lookup');
+    } else {
+      this.closeModal();
     }
 
-    if (user.role === 'organizer' && window.gathrApp) {
-      window.gathrApp.switchView('organizer');
+    // Populate or retrieve ticket pass
+    if (window.gathrApp) {
+      if (!window.gathrApp.userTicket) {
+        const isPhone = !contact.includes('@');
+        window.gathrApp.userTicket = {
+          event: window.GATHR_EVENTS ? window.GATHR_EVENTS[0] : null,
+          tier: { id: 't1-vip', name: 'Executive VIP Pass' },
+          attendeeName: isPhone ? `Attendee (${contact})` : 'Chinedu Eze',
+          attendeeEmail: isPhone ? null : contact,
+          attendeePhone: isPhone ? contact : '+234 801 234 5678',
+          ticketCode: `GTHR-VIP-${Math.floor(1000 + Math.random() * 9000)}`,
+          orderRef: `GTHR-ORD-${Date.now() % 1000000}`,
+          purchaseDate: 'Verified',
+          gateway: 'PAYSTACK',
+          signatureVerified: true
+        };
+      }
+      window.gathrApp.switchView('ticket');
+      window.gathrApp.renderUserTicket();
+      if (window.gathrApp.showToast) {
+        window.gathrApp.showToast(`🎟️ Found active digital pass registered to ${contact}!`);
+      }
     }
   }
 
@@ -250,7 +446,7 @@ class GathrAuth {
     const oldName = this.currentUser ? this.currentUser.name : 'User';
     this.saveSession(null);
     if (window.gathrApp && window.gathrApp.showToast) {
-      window.gathrApp.showToast(`Signed out of GATHR session (${oldName})`);
+      window.gathrApp.showToast(`Signed out of GATHR (${oldName})`);
     }
     if (window.gathrApp) {
       window.gathrApp.switchView('explore');
@@ -263,15 +459,16 @@ class GathrAuth {
 
     if (!this.currentUser) {
       container.innerHTML = `
-        <button class="utility-select" onclick="gathrAuth.openModal('signin')" style="display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.28rem 0.85rem; font-weight: 700; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);">
+        <button class="utility-select" onclick="gathrAuth.openModal('signin', 'attendee')" style="display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.28rem 0.85rem; font-weight: 700; background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2);">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Sign In / Register</span>
+          <span>Sign In / Get Tickets</span>
         </button>
       `;
     } else {
       const u = this.currentUser;
       const isOrg = u.role === 'organizer';
       const displayName = u.organization || u.name;
+      const contactDisplay = u.phone || u.email || u.identifier || '';
 
       container.innerHTML = `
         <div style="position: relative; display: inline-flex; align-items: center;">
@@ -287,10 +484,10 @@ class GathrAuth {
           </div>
 
           <!-- Dropdown Menu -->
-          <div id="auth-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: rgba(18, 18, 24, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; width: 220px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); padding: 0.5rem; z-index: 250;">
+          <div id="auth-dropdown-menu" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: rgba(18, 18, 24, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; width: 230px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); padding: 0.5rem; z-index: 250;">
             <div style="padding: 0.5rem 0.65rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 0.4rem;">
               <strong style="color: #FFF; font-size: 0.8rem; display: block;">${u.name}</strong>
-              <span style="color: var(--text-dim); font-size: 0.7rem;">${u.email}</span>
+              <span style="color: var(--text-dim); font-size: 0.7rem;">${contactDisplay}</span>
             </div>
 
             ${isOrg ? `

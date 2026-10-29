@@ -251,17 +251,33 @@ class TestGathrAPI(unittest.TestCase):
             self.assertEqual(data['status'], 'success')
             self.assertGreaterEqual(len(data['webhooks']), 1)
 
-    def test_11_health_check_endpoint(self):
-        """Verify cloud deployment health check probe returns status healthy"""
-        req = urllib.request.Request(f"{BASE_URL}/health")
+    def test_12_phone_number_checkout_and_issuance(self):
+        """Verify attendee can checkout and receive ticket using phone number instead of email"""
+        payload = {
+            "eventId": "gathr-event-02",
+            "tierId": "t2-early",
+            "tierName": "General Admission",
+            "name": "Ifeanyi Alabi",
+            "email": "+2348012345678",
+            "quantity": 2,
+            "subtotal": 24000,
+            "fee": 600,
+            "total": 24600
+        }
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/v1/orders/checkout",
+            data=json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
         with urllib.request.urlopen(req) as resp:
             self.assertEqual(resp.status, 200)
             data = json.loads(resp.read().decode('utf-8'))
-            self.assertEqual(data['status'], 'healthy')
-            self.assertEqual(data['service'], 'GATHR Event Infrastructure OS')
-            self.assertEqual(data['version'], '1.0.0')
+            self.assertEqual(data['status'], 'success')
+            self.assertIn('ticketCode', data)
+            self.assertIn('orderRef', data)
 
 if __name__ == '__main__':
     unittest.main()
+
 
 

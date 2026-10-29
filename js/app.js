@@ -503,7 +503,9 @@ class GathrApp {
   async processCheckoutSubmit(e) {
     e.preventDefault();
     const nameInput = document.getElementById('checkout-name').value.trim() || "Chinedu Eze";
-    const emailInput = document.getElementById('checkout-email').value.trim() || "chinedu@gmail.com";
+    const contactInput = document.getElementById('checkout-email').value.trim() || (window.gathrAuth && window.gathrAuth.currentUser ? (window.gathrAuth.currentUser.phone || window.gathrAuth.currentUser.email) : "08012345678");
+    const isPhone = !contactInput.includes('@');
+    const backendEmail = isPhone ? `${contactInput.replace(/\D/g, '')}@sms.gathr.app` : contactInput;
     const payBtn = document.getElementById('checkout-pay-btn');
     
     const provider = (this.selectedGateway || 'stripe').toUpperCase();
@@ -521,7 +523,8 @@ class GathrApp {
           amount: totalAmount,
           reference: `${provider === 'PAYSTACK' ? 'PSTK' : 'STRIPE'}-${Date.now()}`,
           name: nameInput,
-          email: emailInput,
+          email: backendEmail,
+          contact: contactInput,
           tierName: this.checkoutState.selectedTier.name,
           tierId: this.checkoutState.selectedTier.id,
           quantity: this.checkoutState.quantity,
@@ -537,7 +540,9 @@ class GathrApp {
         event: this.checkoutState.event,
         tier: this.checkoutState.selectedTier,
         attendeeName: nameInput,
-        attendeeEmail: emailInput,
+        attendeeContact: contactInput,
+        attendeeEmail: isPhone ? null : contactInput,
+        attendeePhone: isPhone ? contactInput : null,
         ticketCode: issuedCode,
         orderRef: orderRef,
         purchaseDate: "Just now",
@@ -549,7 +554,7 @@ class GathrApp {
         window.gathrOrganizer.attendees.push({
           id: `att-${Date.now()}`,
           name: nameInput,
-          email: emailInput,
+          email: contactInput,
           tier: this.checkoutState.selectedTier.name,
           code: issuedCode,
           status: "Pending",
@@ -567,7 +572,7 @@ class GathrApp {
       payBtn.disabled = false;
       payBtn.innerText = "Complete Payment";
 
-      this.showToast(`🎉 Verified via ${provider}! Dynamic ticket pass issued: ${issuedCode}`);
+      this.showToast(`🎉 Verified via ${provider}! Dynamic ticket pass issued to ${contactInput}: ${issuedCode}`);
       this.switchView('ticket');
       this.renderUserTicket();
     } catch (err) {
@@ -587,6 +592,7 @@ class GathrApp {
     const titleEl = document.getElementById('pass-event-title');
     const badgeEl = document.getElementById('pass-tier-badge');
     const nameEl = document.getElementById('pass-attendee-name');
+    const contactEl = document.getElementById('pass-attendee-contact');
     const dateEl = document.getElementById('pass-date');
     const venueEl = document.getElementById('pass-venue');
     const codeEl = document.getElementById('pass-ticket-code');
@@ -596,6 +602,10 @@ class GathrApp {
     if (titleEl) titleEl.innerText = t.event.title;
     if (badgeEl) badgeEl.innerText = t.tier.name;
     if (nameEl) nameEl.innerText = t.attendeeName;
+    if (contactEl) {
+      const contactVal = t.attendeePhone || t.attendeeContact || t.attendeeEmail || '';
+      contactEl.innerText = contactVal ? `${t.attendeePhone ? '📱 ' : '✉️ '}${contactVal}` : '';
+    }
     if (dateEl) dateEl.innerText = `${t.event.date} • ${t.event.city}`;
     if (venueEl) venueEl.innerText = `${t.event.venue}`;
     if (codeEl) codeEl.innerText = t.ticketCode;
