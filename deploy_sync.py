@@ -39,10 +39,8 @@ for f in files_to_add:
 
 print("\n2. Creating clean Git commit...")
 commit_msg = (
-    "ci(vercel): configure Vercel serverless function entrypoint and edge routing\n\n"
-    "- Add api/index.py Vercel serverless function entrypoint\n"
-    "- Expose handler = GathrRequestHandler in api_server.py\n"
-    "- Update vercel.json rewrites for /api/* and /health to /api/index.py\n"
+    "fix(ui): update section tagline to GATHR Event Operating System\n\n"
+    "- Change 'Phase 2: Event Operating System' to 'GATHR Event Operating System' in index.html\n"
 ).encode('utf-8')
 
 try:
