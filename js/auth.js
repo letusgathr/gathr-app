@@ -91,6 +91,9 @@ class GathrAuth {
     }
     this.renderHeader();
     this.syncRoleUI();
+    if (window.gathrApp && typeof window.gathrApp.renderMobileDrawerAuth === 'function') {
+      window.gathrApp.renderMobileDrawerAuth();
+    }
   }
 
   // Open Modal - defaults strictly to ATTENDEE first

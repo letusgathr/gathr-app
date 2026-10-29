@@ -51,6 +51,12 @@ class GathrApp {
       window.gathrOrganizer.init();
     }
 
+    // Initialize Mobile Drawer Auth & Escape Key Listener
+    this.renderMobileDrawerAuth();
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') this.closeMobileMenu();
+    });
+
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js')
@@ -68,7 +74,84 @@ class GathrApp {
     if (this.checkoutState.event) {
       this.updateCheckoutSummary();
     }
+    this.syncCurrencySelects(currencyCode);
     this.showToast(`Currency updated to ${meta.flag} ${currencyCode} (${meta.symbol})`);
+  }
+
+  syncCurrencySelects(currencyCode) {
+    const globalSel = document.getElementById('global-currency-select');
+    const mobileSel = document.getElementById('mobile-currency-select');
+    if (globalSel && globalSel.value !== currencyCode) globalSel.value = currencyCode;
+    if (mobileSel && mobileSel.value !== currencyCode) mobileSel.value = currencyCode;
+  }
+
+  // Mobile Slide-Out Drawer Navigation Controller
+  toggleMobileMenu() {
+    const drawer = document.getElementById('mobile-drawer-overlay');
+    if (!drawer) return;
+    if (drawer.classList.contains('open')) {
+      this.closeMobileMenu();
+    } else {
+      this.openMobileMenu();
+    }
+  }
+
+  openMobileMenu() {
+    const drawer = document.getElementById('mobile-drawer-overlay');
+    const btn = document.getElementById('mobile-hamburger-btn');
+    if (drawer) {
+      drawer.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    if (btn) {
+      btn.classList.add('active');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+    this.renderMobileDrawerAuth();
+  }
+
+  closeMobileMenu() {
+    const drawer = document.getElementById('mobile-drawer-overlay');
+    const btn = document.getElementById('mobile-hamburger-btn');
+    if (drawer) {
+      drawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    if (btn) {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  }
+
+  renderMobileDrawerAuth() {
+    const container = document.getElementById('mobile-drawer-auth');
+    if (!container) return;
+    const auth = window.gathrAuth;
+    if (auth && auth.currentUser) {
+      const u = auth.currentUser;
+      const isOrg = u.role === 'organizer';
+      container.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; background: rgba(255, 85, 0, 0.08); border: 1px solid rgba(255, 85, 0, 0.25); border-radius: 12px; padding: 0.75rem 0.95rem;">
+          <div style="display: flex; align-items: center; gap: 0.6rem; min-width: 0;">
+            <div style="font-size: 1.25rem;">${u.avatar || (isOrg ? '🏢' : '👤')}</div>
+            <div style="min-width: 0;">
+              <div style="color: #FFF; font-weight: 700; font-size: 0.85rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${u.name}</div>
+              <div style="color: var(--text-dim); font-size: 0.72rem;">${isOrg ? '⚡ Verified Organizer' : '🎟️ Ticket Holder'}</div>
+            </div>
+          </div>
+          <button onclick="gathrAuth.signOut(); gathrApp.closeMobileMenu();" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; color: #FF5252; border-color: rgba(255,82,82,0.3); border-radius: 8px;">
+            Sign Out
+          </button>
+        </div>
+      `;
+    } else {
+      container.innerHTML = `
+        <button onclick="gathrAuth.openModal('signin', 'attendee'); gathrApp.closeMobileMenu();" class="btn btn-secondary btn-block btn-sm" style="padding: 0.65rem; font-weight: 700; font-size: 0.85rem; justify-content: center; gap: 0.5rem; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2); border-radius: 10px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Sign In / Find Passes
+        </button>
+      `;
+    }
   }
 
   // Location / Country Filter Controller
@@ -170,10 +253,14 @@ class GathrApp {
       orgBanner.style.display = viewName === 'organizer' ? 'block' : 'none';
     }
 
-    // Update nav button active states
+    // Update desktop & mobile nav button active states
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.view === viewName);
     });
+    document.querySelectorAll('.mobile-nav-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.view === viewName);
+    });
+    this.closeMobileMenu();
 
     // Handle view-specific initializations
     const scanner = window.gathrGateScanner || (typeof gathrGateScanner !== 'undefined' ? gathrGateScanner : null);

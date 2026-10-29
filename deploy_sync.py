@@ -39,8 +39,11 @@ for f in files_to_add:
 
 print("\n2. Creating clean Git commit...")
 commit_msg = (
-    "fix(auth): capitalize gathr to GATHR in sign-in feature modal header\n\n"
-    "- Update auth brand name to uppercase GATHR in index.html and components.css\n"
+    "feat(nav): add responsive mobile hamburger menu and slide-out navigation drawer\n\n"
+    "- Add animated mobile hamburger button on screens <= 1024px\n"
+    "- Add glassmorphic slide-out navigation drawer for mobile/tablet screens\n"
+    "- Preserve clean horizontal CTA buttons on desktop screens\n"
+    "- Integrate drawer authentication status and currency selector sync\n"
 ).encode('utf-8')
 
 try:

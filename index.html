@@ -118,8 +118,112 @@
           </li>
         </ul>
       </nav>
+
+      <!-- Mobile Hamburger & Quick Action (Visible on Mobile & Tablet screens <= 1024px) -->
+      <div class="mobile-nav-toggle-wrap">
+        <button class="btn btn-primary btn-sm mobile-quick-host-btn" onclick="gathrAuth.handleHostEventClick()">
+          + Host
+        </button>
+        <button id="mobile-hamburger-btn" class="hamburger-toggle-btn" onclick="gathrApp.toggleMobileMenu()" aria-label="Toggle navigation menu" aria-expanded="false">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
     </div>
   </header>
+
+  <!-- ==========================================
+       MOBILE SLIDE-OUT DRAWER NAVIGATION
+       Provides clean access on Mobile & Tablet screens
+       ========================================== -->
+  <div id="mobile-drawer-overlay" class="mobile-drawer-overlay" onclick="gathrApp.closeMobileMenu()">
+    <div class="mobile-drawer-content" onclick="event.stopPropagation()">
+      <!-- Drawer Top Header with Logo and Close Button -->
+      <div class="mobile-drawer-header">
+        <div class="liquid-logo-wrap" onclick="gathrApp.switchView('explore'); gathrApp.closeMobileMenu();">
+          <img src="./assets/images/logo.png" alt="GATHR Logo" style="width: 32px; height: 32px; border-radius: 8px;">
+          <div class="brand-title-wrap">
+            <span class="brand-title liquid-text-shimmer">GATHR</span>
+            <span class="brand-tagline-small">Powering Access</span>
+          </div>
+        </div>
+        <button class="mobile-drawer-close" onclick="gathrApp.closeMobileMenu()" aria-label="Close menu">✕</button>
+      </div>
+
+      <!-- User Identity / Auth Box -->
+      <div id="mobile-drawer-auth" class="mobile-drawer-auth-box"></div>
+
+      <!-- Navigation Items List -->
+      <nav class="mobile-drawer-nav">
+        <button class="mobile-nav-item active" data-view="explore" onclick="gathrApp.switchView('explore'); gathrApp.closeMobileMenu();">
+          <span class="mobile-nav-icon">🧭</span>
+          <span class="mobile-nav-label">Explore Events</span>
+        </button>
+
+        <button class="mobile-nav-item" data-view="ticket" onclick="gathrApp.switchView('ticket'); gathrApp.closeMobileMenu();">
+          <span class="mobile-nav-icon">🎟️</span>
+          <span class="mobile-nav-label">My Tickets & Passes</span>
+        </button>
+
+        <button class="mobile-nav-item" data-view="radar" onclick="gathrApp.switchView('radar'); gathrApp.closeMobileMenu();">
+          <span class="mobile-nav-icon">👥</span>
+          <span class="mobile-nav-label">Who's Going & Network</span>
+        </button>
+
+        <button class="mobile-nav-item" data-view="planning" onclick="gathrApp.switchView('planning'); gathrApp.closeMobileMenu();">
+          <span class="mobile-nav-icon">📋</span>
+          <span class="mobile-nav-label">Plan & Vendors</span>
+        </button>
+
+        <button class="mobile-nav-item" onclick="gathrPlanning.openVendorOnboardingModal(); gathrApp.closeMobileMenu();">
+          <span class="mobile-nav-icon">🤝</span>
+          <span class="mobile-nav-label">Enlist as Verified Vendor</span>
+        </button>
+
+        <button class="mobile-nav-item organizer-nav-item" data-view="organizer" onclick="gathrApp.switchView('organizer'); gathrApp.closeMobileMenu();">
+          <span class="mobile-nav-icon">📊</span>
+          <span class="mobile-nav-label">Organizer Studio</span>
+        </button>
+
+        <button class="mobile-nav-item organizer-nav-item" data-view="scanner" onclick="gathrApp.switchView('scanner'); gathrApp.closeMobileMenu();">
+          <span class="mobile-nav-icon">📱</span>
+          <span class="mobile-nav-label">Door Scanner HUD</span>
+        </button>
+      </nav>
+
+      <!-- Primary Action: Host an Event -->
+      <div class="mobile-drawer-actions">
+        <button class="btn btn-primary btn-block" onclick="gathrAuth.handleHostEventClick(); gathrApp.closeMobileMenu();" style="padding: 0.85rem; font-weight: 700; font-size: 0.95rem; justify-content: center; border-radius: var(--radius-full);">
+          + Host an Event
+        </button>
+      </div>
+
+      <!-- Footer Quick Info & Legal Links -->
+      <div class="mobile-drawer-footer">
+        <div style="margin-bottom: 0.85rem;">
+          <label style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.35rem;">Platform Currency</label>
+          <select id="mobile-currency-select" class="utility-select" style="width: 100%; padding: 0.45rem 0.65rem;" onchange="gathrApp.setCurrency(this.value); gathrApp.syncCurrencySelects(this.value);">
+            <option value="USD">🇺🇸 USD ($)</option>
+            <option value="NGN">🇳🇬 NGN (₦)</option>
+            <option value="GBP">🇬🇧 GBP (£)</option>
+            <option value="EUR">🇪🇺 EUR (€)</option>
+            <option value="CAD">🇨🇦 CAD (C$)</option>
+            <option value="ZAR">🇿🇦 ZAR (R)</option>
+            <option value="KES">🇰🇪 KES (KSh)</option>
+            <option value="GHS">🇬🇭 GHS (GH₵)</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 0.85rem; justify-content: center; font-size: 0.76rem;">
+          <a href="javascript:void(0)" onclick="gathrApp.openLegalModal('tos'); gathrApp.closeMobileMenu();" style="color: var(--text-muted); text-decoration: underline;">Terms</a>
+          <span style="color: rgba(255,255,255,0.2);">•</span>
+          <a href="javascript:void(0)" onclick="gathrApp.openLegalModal('privacy'); gathrApp.closeMobileMenu();" style="color: var(--text-muted); text-decoration: underline;">Privacy</a>
+          <span style="color: rgba(255,255,255,0.2);">•</span>
+          <a href="javascript:void(0)" onclick="gathrApp.openLegalModal('refund'); gathrApp.closeMobileMenu();" style="color: var(--text-muted); text-decoration: underline;">Refunds</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Dedicated Organizer Mode Top Banner -->
   <div id="organizer-mode-banner" class="organizer-mode-banner">
