@@ -2,7 +2,24 @@
 
 **Powering seamless access to events.**
 
-GATHR is an event ticketing and operations platform intended to help organizers publish events, sell tickets, manage entry, and understand event performance. Its longer-term vision is an AI-enabled event operating system spanning planning, networking, vendor sourcing, and hybrid experiences.
+GATHR is an event ticketing, coordination, and operations operating system designed to help organizers plan, publish, coordinate, and execute world-class gatherings.
+
+### Live Production Capabilities:
+1. **Attendee-First Frictionless Ticketing**:
+   - Phone Number OR Email sign-in with instant WhatsApp / SMS delivery.
+   - Dynamic rolling TOTP QR codes with sub-0.4s door validation and zero-cell offline PWA scanning.
+2. **Attendee Networking & "Who's Going" Community (GATHR Radar)**:
+   - Event-specific attendee directories, mutual friend discovery, 1-on-1 networking chat with AI icebreakers, and WhatsApp squad invites.
+3. **Vetted Vendor Enlisting & Verification Marketplace**:
+   - Service providers onboard and get verified with CAC registration, portfolio links, and Tier 2 Partner Badges.
+   - Sourcing marketplace with live keyword search, service category filters, and direct WhatsApp communication.
+4. **Task RFP & 3-Milestone GATHR Trust Escrow**:
+   - Organizers assign specific event tasks (e.g. 4K LED Screen Rigging, 200 VIP Plated Dinners, Tactical Security Squads).
+   - Structured 3-milestone escrow protection: 50% Upfront Deposit, 25% On-Site Soundcheck Sign-Off, 25% Final Wrap Disbursal.
+5. **Event Planning & Coordination Suite**:
+   - 4-phase interactive checklist (Pre-Event Architecture, Vendor Contracts, Production Rehearsals, Day-Of Operations).
+   - Dynamic readiness progress tracker, customizable tasks, team lead assignments, and printable operational crew manifests.
+   - Day-of stage run-of-show with technical/audio cues and autonomous AI buffer insertion.
 
 > **Project status:** The supplied project folder contains product/design documents, pitch decks, and brand images. It does not yet contain an application, source code, dependency manifest, or runnable development environment. This README is the implementation guide, not a claim that the software has already been built.
 

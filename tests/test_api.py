@@ -276,6 +276,88 @@ class TestGathrAPI(unittest.TestCase):
             self.assertIn('ticketCode', data)
             self.assertIn('orderRef', data)
 
+    def test_13_enlist_verified_vendor(self):
+        """Verify service providers can enlist and get verified as GATHR marketplace vendors"""
+        payload = {
+            "name": "AcousticVibe Engineering",
+            "category": "Audio/Visual & Lighting",
+            "location": "Lekki Phase 1, Lagos",
+            "startingPrice": 3500000,
+            "specialty": "Touring line arrays and intelligent moving beams",
+            "contactEmail": "bookings@acousticvibe.ng",
+            "phone": "+2348039988776",
+            "cacNumber": "RC-1928374"
+        }
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/v1/vendors/enlist",
+            data=json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 201)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertTrue(data['verified'])
+            self.assertTrue(data['vendorId'].startswith('vnd-'))
+
+    def test_14_submit_vendor_task_rfp_and_release_milestones(self):
+        """Verify organizers can assign tasks, lock escrow, and release milestones upon execution"""
+        rfp_payload = {
+            "eventId": "gathr-event-01",
+            "vendorId": "vnd-01",
+            "vendorName": "Pulse Audio-Visual",
+            "category": "Audio/Visual & Lighting",
+            "budget": 4000000,
+            "scope": "Mainstage 4K LED Screen Rigging"
+        }
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/v1/vendors/rfp",
+            data=json.dumps(rfp_payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 201)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertEqual(data['escrowFunded'], 2000000) # 50% milestone
+            rfp_id = data['rfpId']
+
+        # Release Milestone 2 (Soundcheck sign-off)
+        release_payload = {"rfpId": rfp_id, "milestone": 2}
+        req_rel = urllib.request.Request(
+            f"{BASE_URL}/api/v1/vendors/rfp/release",
+            data=json.dumps(release_payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+        with urllib.request.urlopen(req_rel) as resp:
+            self.assertEqual(resp.status, 200)
+            rel_data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(rel_data['status'], 'success')
+            self.assertIn("Milestone 2 Released", rel_data['newStatus'])
+
+    def test_15_planning_tasks_retrieval_and_toggle(self):
+        """Verify organizers can fetch coordination tasks and toggle status"""
+        req = urllib.request.Request(f"{BASE_URL}/api/v1/planning/tasks")
+        with urllib.request.urlopen(req) as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(data['status'], 'success')
+            self.assertGreaterEqual(len(data['tasks']), 1)
+            task_id = data['tasks'][0]['id']
+
+        # Toggle task
+        toggle_payload = {"taskId": task_id, "status": "Completed"}
+        req_tog = urllib.request.Request(
+            f"{BASE_URL}/api/v1/planning/tasks/toggle",
+            data=json.dumps(toggle_payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+        with urllib.request.urlopen(req_tog) as resp:
+            self.assertEqual(resp.status, 200)
+            tog_data = json.loads(resp.read().decode('utf-8'))
+            self.assertEqual(tog_data['status'], 'success')
+            self.assertEqual(tog_data['newStatus'], 'Completed')
+
 if __name__ == '__main__':
     unittest.main()
 

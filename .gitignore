@@ -9,3 +9,5 @@ __pycache__/
 *.pyc
 *Access Token*
 *token*.png
+.git_token
+*.token

@@ -113,6 +113,15 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
             conn.close()
             return self._send_json(200, {'status': 'success', 'schedule': schedule})
 
+        # API: Get Event Planning & Coordination Tasks
+        elif path == '/api/v1/planning/tasks':
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("SELECT * FROM planning_tasks ORDER BY id ASC")
+            tasks = [dict(t) for t in c.fetchall()]
+            conn.close()
+            return self._send_json(200, {'status': 'success', 'tasks': tasks})
+
         # API: Get Radar Networking Profiles
         elif path == '/api/v1/radar/profiles':
             conn = get_connection()
@@ -342,6 +351,95 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
                 'status': 'success',
                 'rosId': ros_id,
                 'message': 'Activity added to live event run-of-show.'
+            })
+
+        # API: Enlist & Onboard Verified Vendor
+        elif path == '/api/v1/vendors/enlist':
+            conn = get_connection()
+            c = conn.cursor()
+            vendor_id = f"vnd-{int(datetime.now().timestamp() * 1000) % 100000}"
+            c.execute("""
+            INSERT INTO vendors (id, name, category, rating, reviews_count, location, starting_price, verified, image, specialty, contact_email)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                vendor_id,
+                payload.get('name', 'Registered Vendor Partner'),
+                payload.get('category', 'Audio/Visual & Lighting'),
+                5.0, # Freshly verified partner rating
+                1,   # Initial verified review count
+                payload.get('location', 'Lagos, Nigeria'),
+                int(payload.get('startingPrice', 1500000)),
+                1,   # Verified Partner
+                payload.get('image', './assets/images/tech-summit.jpg'),
+                payload.get('specialty', 'Professional event execution partner'),
+                payload.get('contactEmail', payload.get('email', 'vendor@gathr.ng'))
+            ))
+            conn.commit()
+            conn.close()
+            return self._send_json(201, {
+                'status': 'success',
+                'vendorId': vendor_id,
+                'verified': True,
+                'message': 'Vendor successfully verified and onboarded to GATHR marketplace.'
+            })
+
+        # API: Release Vendor Escrow Milestone
+        elif path == '/api/v1/vendors/rfp/release':
+            rfp_id = payload.get('rfpId')
+            milestone = payload.get('milestone', 1)
+            conn = get_connection()
+            c = conn.cursor()
+            status_text = f"Milestone {milestone} Released ✓" if int(milestone) < 3 else "Completed & Fully Disbursed ✓"
+            c.execute("UPDATE vendor_rfps SET status = ? WHERE id = ?", (status_text, rfp_id))
+            conn.commit()
+            conn.close()
+            return self._send_json(200, {
+                'status': 'success',
+                'rfpId': rfp_id,
+                'milestone': milestone,
+                'newStatus': status_text,
+                'message': f'Milestone {milestone} released from escrow to vendor.'
+            })
+
+        # API: Add Planning Task
+        elif path == '/api/v1/planning/tasks':
+            conn = get_connection()
+            c = conn.cursor()
+            task_id = f"task-{int(datetime.now().timestamp() * 1000) % 100000}"
+            c.execute("""
+            INSERT INTO planning_tasks (id, event_id, phase, title, lead, due_date, status, vendor_tag)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                task_id,
+                payload.get('eventId', 'gathr-event-01'),
+                payload.get('phase', 'Pre-Event Architecture'),
+                payload.get('title', 'Custom Event Task'),
+                payload.get('lead', 'Event Lead'),
+                payload.get('dueDate', 'T-3 Days'),
+                payload.get('status', 'Pending'),
+                payload.get('vendorTag', 'General Coordination')
+            ))
+            conn.commit()
+            conn.close()
+            return self._send_json(201, {
+                'status': 'success',
+                'taskId': task_id,
+                'message': 'Task added to event coordination board.'
+            })
+
+        # API: Toggle Planning Task Status
+        elif path == '/api/v1/planning/tasks/toggle':
+            task_id = payload.get('taskId')
+            new_status = payload.get('status', 'Completed')
+            conn = get_connection()
+            c = conn.cursor()
+            c.execute("UPDATE planning_tasks SET status = ? WHERE id = ?", (new_status, task_id))
+            conn.commit()
+            conn.close()
+            return self._send_json(200, {
+                'status': 'success',
+                'taskId': task_id,
+                'newStatus': new_status
             })
 
         # API: Offline Gate Scanner Batch Sync

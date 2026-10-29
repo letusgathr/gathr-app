@@ -336,3 +336,270 @@
   font-weight: 800;
   color: var(--brand-orange);
 }
+
+/* ==========================================================================
+   EVENT COORDINATION CHECKLIST & PROGRESS
+   ========================================================================== */
+.planning-progress-card {
+  background: linear-gradient(135deg, rgba(255, 85, 0, 0.08) 0%, rgba(18, 21, 32, 0.95) 100%);
+  border: 1px solid rgba(255, 85, 0, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.planning-progress-bar-bg {
+  width: 100%;
+  max-width: 320px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.planning-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-orange) 0%, var(--accent-green) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.planning-phase-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.planning-phase-header {
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.planning-tasks-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.planning-task-item {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all var(--transition-fast);
+}
+
+.planning-task-item:last-child {
+  border-bottom: none;
+}
+
+.planning-task-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.planning-task-item.task-done {
+  opacity: 0.65;
+}
+
+/* Custom Checkbox */
+.planning-task-checkbox-wrap {
+  position: relative;
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.planning-task-checkbox-wrap input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.planning-task-checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.planning-task-checkbox-wrap:hover input ~ .planning-task-checkmark {
+  border-color: var(--brand-orange);
+}
+
+.planning-task-checkbox-wrap input:checked ~ .planning-task-checkmark {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+}
+
+.planning-task-checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 11px;
+  border: solid #000;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+.planning-task-checkbox-wrap input:checked ~ .planning-task-checkmark:after {
+  display: block;
+}
+
+.planning-task-details {
+  flex: 1;
+}
+
+.planning-task-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #FFF;
+  margin-bottom: 0.25rem;
+}
+
+.planning-task-title.line-through {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.planning-task-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.planning-vendor-tag {
+  background: rgba(255, 85, 0, 0.1);
+  color: var(--brand-orange);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   VENDOR SOURCING SEARCH & FILTER BAR
+   ========================================================================== */
+.vendor-search-filter-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.vendor-search-top-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 800px) {
+  .vendor-search-top-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vendor-verified-filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   MILESTONES ESCROW TIMELINE
+   ========================================================================== */
+.milestones-timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .milestones-timeline-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.milestone-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: all var(--transition-fast);
+}
+
+.milestone-box.milestone-done {
+  border-color: rgba(0, 230, 118, 0.4);
+  background: rgba(0, 230, 118, 0.04);
+}
+
+.milestone-step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.milestone-step-pill {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--brand-orange);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.milestone-box.milestone-done .milestone-step-pill {
+  background: var(--accent-green);
+}
+
+.milestone-step-val {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #FFF;
+}
+
+.milestone-step-status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}

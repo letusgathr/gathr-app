@@ -138,6 +138,19 @@ def init_db():
     """)
 
     c.execute("""
+    CREATE TABLE IF NOT EXISTS planning_tasks (
+        id TEXT PRIMARY KEY,
+        event_id TEXT NOT NULL,
+        phase TEXT NOT NULL,
+        title TEXT NOT NULL,
+        lead TEXT NOT NULL,
+        due_date TEXT NOT NULL,
+        status TEXT DEFAULT 'Pending',
+        vendor_tag TEXT
+    )
+    """)
+
+    c.execute("""
     CREATE TABLE IF NOT EXISTS networking_profiles (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
@@ -183,6 +196,26 @@ def init_db():
     c.execute("SELECT COUNT(*) FROM events")
     if c.fetchone()[0] == 0:
         seed_data(conn)
+
+    # Seed planning tasks if empty
+    c.execute("SELECT COUNT(*) FROM planning_tasks")
+    if c.fetchone()[0] == 0:
+        tasks = [
+            ("task-01", "gathr-event-01", "Pre-Event Architecture", "Lock Landmark Centre Arena Contract & Safety Clearance", "Venue Lead", "T-14 Days", "Completed", "Landmark Operations"),
+            ("task-02", "gathr-event-01", "Pre-Event Architecture", "Configure GATHR Multi-Party Split Settlement (Host 70% / Venue 20% / Promoters 10%)", "Finance Lead", "T-12 Days", "Completed", "GATHR Engine"),
+            ("task-03", "gathr-event-01", "Vendor Sourcing & Contracts", "Hire Pulse Audio-Visual: 12m 4K LED Concert Wall & Line Arrays", "Production Lead", "T-10 Days", "Completed", "Pulse Audio-Visual"),
+            ("task-04", "gathr-event-01", "Vendor Sourcing & Contracts", "Contract Savory Roots: 200 VIP Plated Dinners & Espresso Bar", "Hospitality Lead", "T-7 Days", "Completed", "Savory Roots Catering"),
+            ("task-05", "gathr-event-01", "Vendor Sourcing & Contracts", "Deploy Apex Tactical Security: 12 Bouncers & Dual Walk-Through Detectors", "Security Director", "T-5 Days", "In Progress", "Apex Tactical Security"),
+            ("task-06", "gathr-event-01", "Production & Rehearsals", "Audio Load-In & Keynote Speaker Wireless Shure Frequency Test", "Tech Director", "T-2 Days", "In Progress", "Pulse Audio-Visual"),
+            ("task-07", "gathr-event-01", "Production & Rehearsals", "Synchronize Holographic Passes & Offline Door Scanner Manifests", "Access Ops", "T-1 Day", "Pending", "GATHR Mesh"),
+            ("task-08", "gathr-event-01", "Day-Of Execution & Wrap", "Gate 1-3 Turnstiles Online & Real-time Attendance Pacing Monitor", "Gate Manager", "Event Day 08:00 AM", "Pending", "Gate Operations"),
+            ("task-09", "gathr-event-01", "Day-Of Execution & Wrap", "Sign-Off On-Site Production & Release Vendor Milestone 2 Escrow", "Executive Producer", "Event Day 02:00 PM", "Pending", "GATHR Escrow")
+        ]
+        c.executemany("""
+        INSERT INTO planning_tasks (id, event_id, phase, title, lead, due_date, status, vendor_tag)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, tasks)
+        conn.commit()
 
     conn.close()
 
@@ -446,11 +479,29 @@ def seed_data(conn):
         ("whk-02", "STRIPE", "payment_intent.succeeded", "pi_3P00GATHR99", 65000, "SUCCESS_CONFIRMED", 1, "alex.smith@global.io"),
         ("whk-03", "PAYSTACK", "transfer.success", "TRF-8829104", 16721250, "SETTLEMENT_DISBURSED", 1, "host@lagosinnovates.ng")
     ]
-
     c.executemany("""
     INSERT INTO webhook_logs (id, provider, event_type, reference, amount, status, signature_verified, attendee_email)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, sample_webhooks)
+
+    # Seed Event Planning & Coordination Tasks
+    c.execute("SELECT count(*) FROM planning_tasks")
+    if c.fetchone()[0] == 0:
+        tasks = [
+            ("task-01", "gathr-event-01", "Pre-Event Architecture", "Lock Landmark Centre Arena Contract & Safety Clearance", "Venue Lead", "T-14 Days", "Completed", "Landmark Operations"),
+            ("task-02", "gathr-event-01", "Pre-Event Architecture", "Configure GATHR Multi-Party Split Settlement (Host 70% / Venue 20% / Promoters 10%)", "Finance Lead", "T-12 Days", "Completed", "GATHR Engine"),
+            ("task-03", "gathr-event-01", "Vendor Sourcing & Contracts", "Hire Pulse Audio-Visual: 12m 4K LED Concert Wall & Line Arrays", "Production Lead", "T-10 Days", "Completed", "Pulse Audio-Visual"),
+            ("task-04", "gathr-event-01", "Vendor Sourcing & Contracts", "Contract Savory Roots: 200 VIP Plated Dinners & Espresso Bar", "Hospitality Lead", "T-7 Days", "Completed", "Savory Roots Catering"),
+            ("task-05", "gathr-event-01", "Vendor Sourcing & Contracts", "Deploy Apex Tactical Security: 12 Bouncers & Dual Walk-Through Detectors", "Security Director", "T-5 Days", "In Progress", "Apex Tactical Security"),
+            ("task-06", "gathr-event-01", "Production & Rehearsals", "Audio Load-In & Keynote Speaker Wireless Shure Frequency Test", "Tech Director", "T-2 Days", "In Progress", "Pulse Audio-Visual"),
+            ("task-07", "gathr-event-01", "Production & Rehearsals", "Synchronize Holographic Passes & Offline Door Scanner Manifests", "Access Ops", "T-1 Day", "Pending", "GATHR Mesh"),
+            ("task-08", "gathr-event-01", "Day-Of Execution & Wrap", "Gate 1-3 Turnstiles Online & Real-time Attendance Pacing Monitor", "Gate Manager", "Event Day 08:00 AM", "Pending", "Gate Operations"),
+            ("task-09", "gathr-event-01", "Day-Of Execution & Wrap", "Sign-Off On-Site Production & Release Vendor Milestone 2 Escrow", "Executive Producer", "Event Day 02:00 PM", "Pending", "GATHR Escrow")
+        ]
+        c.executemany("""
+        INSERT INTO planning_tasks (id, event_id, phase, title, lead, due_date, status, vendor_tag)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, tasks)
 
     conn.commit()
 

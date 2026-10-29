@@ -82,6 +82,18 @@
               My Tickets
             </button>
           </li>
+          <li>
+            <button class="nav-btn" data-view="radar" onclick="gathrApp.switchView('radar')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Who's Going & Network
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" data-view="planning" onclick="gathrApp.switchView('planning')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              Plan & Vendors
+            </button>
+          </li>
           <li class="organizer-nav-item">
             <button class="nav-btn" data-view="organizer" onclick="gathrApp.switchView('organizer')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
@@ -92,6 +104,11 @@
             <button class="nav-btn" data-view="scanner" onclick="gathrApp.switchView('scanner')">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h3"/><path d="M20 7V4h-3"/><path d="M4 17v3h3"/><path d="M20 17v3h-3"/><rect x="9" y="9" width="6" height="6"/></svg>
               Door Scanner
+            </button>
+          </li>
+          <li>
+            <button class="btn btn-secondary btn-sm" onclick="gathrPlanning.openVendorOnboardingModal()" style="padding: 0.38rem 0.85rem; font-size: 0.825rem; font-weight: 700;">
+              🤝 Enlist Vendor
             </button>
           </li>
           <li>
@@ -481,6 +498,22 @@
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               Share Pass with Friends
             </button>
+
+            <!-- Who's Going With You & Attendee Community Card -->
+            <div style="margin-top: 1.5rem; background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+                <div style="font-weight: 700; font-size: 0.95rem; color: #FFF; display: flex; align-items: center; gap: 0.4rem;">
+                  <span>👥</span> Who's Going With You
+                </div>
+                <button class="auth-blue-link" onclick="gathrRadar.openCurrentEventNetworking()" style="font-size: 0.78rem; font-weight: 700;">
+                  View All & Network →
+                </button>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.4;">
+                Connect with verified badge holders and friends attending this gathering before you arrive at the venue.
+              </p>
+              <div id="pass-event-attendees-grid" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -606,34 +639,79 @@
       <div class="planning-header-bar">
         <div>
           <div class="section-tagline">Phase 2: Event Operating System</div>
-          <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.35rem;">AI Planning & Vendor Sourcing</h2>
+          <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.35rem;">Event Planning, Coordination & Verified Vendors</h2>
           <p style="color: var(--text-muted); font-size: 0.95rem;">
-            One singular intelligent layer for event logistics, dynamic budgeting, and vetted vendor escrows.
+            One unified intelligent OS for team task coordination, stage run-of-show, vetted vendor sourcing, and milestone escrows.
           </p>
         </div>
 
-        <div class="planning-tab-pills">
-          <button class="planning-tab-btn active" data-tab="schedule" onclick="gathrPlanning.switchTab('schedule')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Run-of-Show
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="gathrPlanning.exportOperationalPlanManifest()">
+            🖨️ Crew Manifest & PDF
           </button>
-          <button class="planning-tab-btn" data-tab="budget" onclick="gathrPlanning.switchTab('budget')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            AI Budgeting
+          <button class="btn btn-secondary btn-sm" onclick="gathrPlanning.addCustomPlanningTask()">
+            + Add Event Task
           </button>
-          <button class="planning-tab-btn" data-tab="vendors" onclick="gathrPlanning.switchTab('vendors')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            Vendor Sourcing
-          </button>
-          <button class="planning-tab-btn" data-tab="rfps" onclick="gathrPlanning.switchTab('rfps')">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Escrow RFPs
+          <button class="btn btn-primary btn-sm" onclick="gathrPlanning.openVendorOnboardingModal()">
+            🤝 Enlist as Verified Vendor
           </button>
         </div>
       </div>
 
-      <!-- Tab Panel 1: Run of Show Timeline -->
-      <div id="planning-panel-schedule">
+      <!-- Planning Navigation Tabs -->
+      <div class="planning-tab-pills" style="margin-bottom: 2rem;">
+        <button class="planning-tab-btn active" data-tab="checklist" onclick="gathrPlanning.switchTab('checklist')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Coordination Tasks
+        </button>
+        <button class="planning-tab-btn" data-tab="schedule" onclick="gathrPlanning.switchTab('schedule')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Run-of-Show & Cues
+        </button>
+        <button class="planning-tab-btn" data-tab="vendors" onclick="gathrPlanning.switchTab('vendors')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Vendor Sourcing
+        </button>
+        <button class="planning-tab-btn" data-tab="rfps" onclick="gathrPlanning.switchTab('rfps')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Milestone Escrows
+        </button>
+        <button class="planning-tab-btn" data-tab="budget" onclick="gathrPlanning.switchTab('budget')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          AI Budget Modeler
+        </button>
+      </div>
+
+      <!-- Tab Panel 1: Event Coordination Tasks & Checklist -->
+      <div id="planning-panel-checklist">
+        <!-- Progress Summary Card -->
+        <div class="planning-progress-card">
+          <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--brand-orange); font-weight: 700; margin-bottom: 0.25rem;">
+              ⚡ Event Readiness Tracker
+            </div>
+            <h3 style="font-size: 1.35rem; font-weight: 800; color: #FFF; margin-bottom: 0.25rem;">
+              Event Architecture & Logistics Progress
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">
+              Structured across 4 execution phases: permits, vendor sourcing, production rehearsals, and day-of operations.
+            </p>
+          </div>
+          <div style="min-width: 260px;">
+            <div id="planning-progress-text" style="font-weight: 800; font-size: 0.95rem; color: #FFF; text-align: right;">
+              Calculating Readiness...
+            </div>
+            <div class="planning-progress-bar-bg">
+              <div id="planning-progress-bar" class="planning-progress-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="planning-checklist-container"></div>
+      </div>
+
+      <!-- Tab Panel 2: Run of Show Timeline -->
+      <div id="planning-panel-schedule" style="display: none;">
         <div class="ai-logistics-banner">
           <div>
             <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--brand-orange); font-weight: 700; margin-bottom: 0.25rem;">
@@ -659,7 +737,77 @@
         <div id="ros-timeline-container" class="ros-timeline"></div>
       </div>
 
-      <!-- Tab Panel 2: AI Budget Estimator -->
+      <!-- Tab Panel 3: Vetted Vendor Sourcing & Marketplace -->
+      <div id="planning-panel-vendors" style="display: none;">
+        <!-- Vendor Sourcing Search & Filter Bar -->
+        <div class="vendor-search-filter-bar">
+          <div class="vendor-search-top-row">
+            <div>
+              <input 
+                type="text" 
+                class="search-input" 
+                style="padding-left: 1rem;" 
+                placeholder="Search vendors by service (e.g. 4K LED Screen, Cocktails, Bouncers, DJ, Drone)..."
+                oninput="gathrPlanning.setVendorSearch(this.value)"
+              >
+            </div>
+            <div>
+              <select class="city-select" style="width: 100%;" onchange="gathrPlanning.setVendorLocation(this.value)">
+                <option value="all">📍 All Operating Hubs</option>
+                <option value="Lagos">Lagos (All Hubs)</option>
+                <option value="Victoria Island">Victoria Island / Ikoyi</option>
+                <option value="Lekki">Lekki / Mainland</option>
+                <option value="Abuja">Abuja</option>
+                <option value="Accra">Accra / West Africa</option>
+                <option value="London">London / Diaspora</option>
+              </select>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem;">
+              <label class="vendor-verified-filter-toggle">
+                <input type="checkbox" onchange="gathrPlanning.toggleVerifiedOnly(this.checked)" style="accent-color: var(--accent-green); width: 17px; height: 17px;">
+                <span>Verified Only ✓</span>
+              </label>
+              <button class="btn btn-primary btn-sm" onclick="gathrPlanning.openVendorOnboardingModal()" style="font-size: 0.78rem;">
+                + Enlist As Vendor
+              </button>
+            </div>
+          </div>
+
+          <!-- Category Pills -->
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="vendor-cat-pill btn btn-secondary btn-sm active" data-cat="all" onclick="gathrPlanning.filterVendors('all')">All Services</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="av" onclick="gathrPlanning.filterVendors('av')">Sound & 4K Lighting</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="catering" onclick="gathrPlanning.filterVendors('catering')">Catering & Mixology</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="security" onclick="gathrPlanning.filterVendors('security')">Tactical Security</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="media" onclick="gathrPlanning.filterVendors('media')">4K Broadcast & Drones</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="decor" onclick="gathrPlanning.filterVendors('decor')">Decor & Rigging</button>
+            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="talent" onclick="gathrPlanning.filterVendors('talent')">DJs & Entertainment</button>
+          </div>
+        </div>
+
+        <div id="vendor-cards-grid" class="vendor-cards-grid"></div>
+      </div>
+
+      <!-- Tab Panel 4: Active RFPs & Escrow Milestones -->
+      <div id="planning-panel-rfps" style="display: none;">
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-size: 1.35rem; font-weight: 800; color: #FFF; margin-bottom: 0.25rem;">
+              Milestone Escrow Contracts & Sign-Offs
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">
+              Funds are held in neutral GATHR Trust Escrow and only disbursed when organizers sign off on soundcheck and completion.
+            </p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="gathrPlanning.switchTab('vendors')">
+            + Sourcing New Vendor
+          </button>
+        </div>
+
+        <div id="rfps-list-container" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+      </div>
+
+      <!-- Tab Panel 5: AI Budget Estimator -->
       <div id="planning-panel-budget" style="display: none;">
         <div class="budget-grid-wrap">
           <div class="budget-calculator-card">
@@ -728,37 +876,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Tab Panel 3: Vetted Vendor Sourcing -->
-      <div id="planning-panel-vendors" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
-          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <button class="vendor-cat-pill btn btn-secondary btn-sm active" data-cat="all" onclick="gathrPlanning.filterVendors('all')">All Vendors</button>
-            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="av" onclick="gathrPlanning.filterVendors('av')">Sound & 4K Lighting</button>
-            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="catering" onclick="gathrPlanning.filterVendors('catering')">Catering & Mixology</button>
-            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="security" onclick="gathrPlanning.filterVendors('security')">Tactical Security</button>
-            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="media" onclick="gathrPlanning.filterVendors('media')">4K Broadcast & Drones</button>
-            <button class="vendor-cat-pill btn btn-secondary btn-sm" data-cat="decor" onclick="gathrPlanning.filterVendors('decor')">Decor & Rigging</button>
-          </div>
-          <span style="font-size: 0.8rem; color: var(--text-dim);">🛡️ 100% Escrow Protected Booking</span>
-        </div>
-
-        <div id="vendor-cards-grid" class="vendor-cards-grid"></div>
-      </div>
-
-      <!-- Tab Panel 4: Active RFPs & Escrow Milestones -->
-      <div id="planning-panel-rfps" style="display: none;">
-        <div style="margin-bottom: 1.5rem;">
-          <h3 style="font-size: 1.35rem; font-weight: 800; color: #FFF; margin-bottom: 0.25rem;">
-            Milestone Escrow Contracts
-          </h3>
-          <p style="color: var(--text-muted); font-size: 0.875rem;">
-            Funds are held in neutral escrow and only disbursed when organizers sign off on soundcheck and execution milestones.
-          </p>
-        </div>
-
-        <div id="rfps-list-container" style="display: flex; flex-direction: column; gap: 1rem;"></div>
       </div>
     </div>
   </main>
@@ -1060,6 +1177,35 @@
           <p style="color: var(--text-muted); font-size: 0.95rem;">
             Most platforms end at check-in. GATHR starts at check-in. Our neural network analyzes attendee intentions and curates high-value connections with personalized icebreakers.
           </p>
+        </div>
+
+        <!-- Event Community Switcher & Invite Bar -->
+        <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">Viewing Gathering:</span>
+            <select id="radar-event-select" class="city-select" style="font-size: 0.85rem; font-weight: 700; background: rgba(0,0,0,0.5);"></select>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <button class="btn btn-secondary btn-sm" onclick="gathrRadar.shareEventInvite()">
+              📲 WhatsApp Squad Invite
+            </button>
+          </div>
+        </div>
+
+        <!-- Event Banner Meta -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 id="radar-event-banner-title" style="font-size: 1.4rem; font-weight: 800; color: #FFF; margin: 0;">GATHR Event</h3>
+            <div id="radar-event-banner-meta" style="font-size: 0.85rem; color: var(--brand-orange-light); margin-top: 0.2rem;">Date & Venue</div>
+          </div>
+
+          <!-- Filter Pills -->
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="radar-filter-pill btn btn-secondary btn-sm active" data-filter="all" onclick="gathrRadar.setFilter('all')">All Attendees</button>
+            <button class="radar-filter-pill btn btn-secondary btn-sm" data-filter="friends" onclick="gathrRadar.setFilter('friends')">👥 Friends & Mutuals</button>
+            <button class="radar-filter-pill btn btn-secondary btn-sm" data-filter="vip" onclick="gathrRadar.setFilter('vip')">⭐ VIP Badges</button>
+            <button class="radar-filter-pill btn btn-secondary btn-sm" data-filter="founders" onclick="gathrRadar.setFilter('founders')">🚀 Founders & Tech</button>
+          </div>
         </div>
 
         <!-- Interactive Networking Profile Setup -->
@@ -1607,10 +1753,108 @@
   </div>
 
   <!-- ==========================================
+       MODAL: VENDOR ONBOARDING & VERIFICATION WIZARD
+       ========================================== -->
+  <div id="vendor-onboarding-modal" class="meeting-modal-overlay" style="display: none;" onclick="gathrPlanning.closeVendorOnboardingModal()">
+    <div class="meeting-modal-card" style="max-width: 640px; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+            <span class="badge badge-green">GATHR Partner Network</span>
+            <span class="badge" style="background: rgba(255,85,0,0.15); color: var(--brand-orange); font-size: 0.7rem;">Verified Badge Tier</span>
+          </div>
+          <h3 style="font-size: 1.45rem; font-weight: 800; color: #FFF; margin: 0;">Enlist as a Verified Event Vendor</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+            Get verified and sourced by event organizers in Lagos, Abuja, and West Africa. Receive guaranteed payments via GATHR Trust Escrow.
+          </p>
+        </div>
+        <button style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="gathrPlanning.closeVendorOnboardingModal()">✕</button>
+      </div>
+
+      <form onsubmit="gathrPlanning.submitVendorOnboarding(event)">
+        <!-- Business & Category Info -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Business / Brand Name *</label>
+            <input type="text" id="onboard-vendor-name" class="search-input" style="padding-left: 1rem;" placeholder="e.g. SonicStage Pro Audio" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Primary Category *</label>
+            <select id="onboard-vendor-cat" class="city-select" style="width: 100%;">
+              <option value="Audio/Visual & Lighting">Sound, 4K LED & Intelligent Lighting</option>
+              <option value="Catering & Bar Operations">Gourmet Catering & Mixology Bar</option>
+              <option value="Security & Marshalling">Tactical Security & Bouncers</option>
+              <option value="Media & Broadcast">4K Broadcast, Livestream & Drones</option>
+              <option value="Decor & Staging">Stage Architecture & Spatial Decor</option>
+              <option value="DJs & Entertainment">Headline DJs & Performers</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Location & Contact Info -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Operating Hubs / Cities *</label>
+            <input type="text" id="onboard-vendor-loc" class="search-input" style="padding-left: 1rem;" placeholder="e.g. Lagos (Island & Mainland) / Abuja" required>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Phone / WhatsApp Channel *</label>
+            <input type="tel" id="onboard-vendor-phone" class="search-input" style="padding-left: 1rem;" placeholder="e.g. +2348012345678" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Business Email</label>
+            <input type="email" id="onboard-vendor-email" class="search-input" style="padding-left: 1rem;" placeholder="bookings@yourcompany.ng">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Starting Package Price (₦) *</label>
+            <input type="number" id="onboard-vendor-price" class="search-input" style="padding-left: 1rem;" value="2000000" required>
+          </div>
+        </div>
+
+        <!-- Specialty & Equipment -->
+        <div style="margin-bottom: 1.2rem;">
+          <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Specialty & Equipment Deliverables *</label>
+          <textarea id="onboard-vendor-specialty" class="search-input" style="height: 75px; padding: 0.75rem; border-radius: var(--radius-md); font-family: var(--font-body);" placeholder="Describe equipment (e.g. 12m LED wall, Line-array JBL, 100kVA backup) and capacity..." required></textarea>
+        </div>
+
+        <!-- Verification & Compliance -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md); padding: 1.15rem; margin-bottom: 1.5rem;">
+          <div style="font-weight: 700; font-size: 0.9rem; color: #FFF; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>🛡️</span> GATHR Verification Credentials (Instant Partner Badge)
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.35rem;">CAC / Business Reg (RC Number)</label>
+              <input type="text" id="onboard-vendor-cac" class="search-input" style="padding-left: 0.85rem;" placeholder="e.g. RC-1928475">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.35rem;">Portfolio / Instagram Link</label>
+              <input type="text" id="onboard-vendor-portfolio" class="search-input" style="padding-left: 0.85rem;" placeholder="e.g. instagram.com/yourhandle">
+            </div>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--accent-green); margin-top: 0.65rem;">
+            ✓ Registered businesses receive verified checkmark and priority ranking in organizer sourcing search.
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="gathrPlanning.closeVendorOnboardingModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            ✓ Submit & Receive Verified Partner Badge
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
        MODAL: VENDOR RFP & ESCROW FUNDING
        ========================================== -->
   <div id="vendor-rfp-modal" class="meeting-modal-overlay" style="display: none;" onclick="gathrPlanning.closeRfpModal()">
-    <div class="meeting-modal-card" onclick="event.stopPropagation()">
+    <div class="meeting-modal-card" style="max-width: 600px;" onclick="event.stopPropagation()">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
         <div>
           <span class="badge badge-orange" style="margin-bottom: 0.35rem;" id="rfp-modal-vendor-cat">Category</span>
@@ -1619,8 +1863,13 @@
         <button style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="gathrPlanning.closeRfpModal()">✕</button>
       </div>
 
-      <div style="margin-bottom: 1.25rem;">
-        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Scope & Execution Requirements</label>
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Assigned Task Title</label>
+        <input type="text" id="rfp-modal-task-title-input" class="search-input" style="padding-left: 1rem;" value="Mainstage 4K LED Screen Rigging & Line-Array Sound">
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.4rem;">Execution Scope & Call-Time Requirements</label>
         <textarea id="rfp-modal-scope-input" class="search-input" style="height: 80px; padding: 0.75rem; border-radius: var(--radius-md); font-family: var(--font-body);" placeholder="Outline deliverables, equipment counts, call-times..."></textarea>
       </div>
 
@@ -1629,13 +1878,17 @@
         <input type="number" id="rfp-modal-budget-input" class="search-input" style="padding-left: 1rem;" value="3500000">
       </div>
 
+      <!-- 3-Milestone Escrow Plan Summary -->
       <div style="background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.2); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; font-size: 0.8rem; color: var(--text-muted);">
-        🛡️ <strong>GATHR Escrow Guarantee:</strong> 50% milestone funded upfront in trust escrow. Sourced vendor receives payment only after soundcheck sign-off.
+        <div style="font-weight: 700; color: #FFF; margin-bottom: 0.4rem;">🛡️ GATHR Trust Escrow Protection:</div>
+        <div>• <strong>50% Upfront Deposit:</strong> Funded into neutral escrow upon RFP acceptance.</div>
+        <div>• <strong>25% Soundcheck Sign-Off:</strong> Released once vendor arrives and completes stage check.</div>
+        <div>• <strong>25% Final Sign-Off:</strong> Disbursed after event execution and equipment strike.</div>
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
         <button class="btn btn-secondary btn-sm" onclick="gathrPlanning.closeRfpModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="gathrPlanning.submitRfp()">Fund Escrow & Issue RFP</button>
+        <button class="btn btn-primary" onclick="gathrPlanning.submitRfp()">Fund Escrow & Assign Task</button>
       </div>
     </div>
   </div>
@@ -1669,6 +1922,49 @@
         <button class="btn btn-secondary btn-sm" onclick="gathrRadar.closeMeetingModal()">Cancel</button>
         <button class="btn btn-primary" onclick="gathrRadar.confirmMeeting()">Confirm & Send Calendar Invite</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL: 1-ON-1 ATTENDEE NETWORKING CHAT
+       ========================================== -->
+  <div id="attendee-chat-modal" class="meeting-modal-overlay" style="display: none;" onclick="gathrRadar.closeChatModal()">
+    <div class="meeting-modal-card" style="max-width: 500px; display: flex; flex-direction: column; height: 550px;" onclick="event.stopPropagation()">
+      <!-- Chat Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div id="chat-modal-avatar" class="match-avatar" style="width: 40px; height: 40px; font-size: 0.95rem;">AB</div>
+          <div>
+            <h4 id="chat-modal-name" style="font-size: 1.05rem; font-weight: 800; color: #FFF; margin: 0;">Attendee Name</h4>
+            <div id="chat-modal-role" style="font-size: 0.78rem; color: var(--brand-orange-light);">Role</div>
+          </div>
+        </div>
+        <button style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer;" onclick="gathrRadar.closeChatModal()">✕</button>
+      </div>
+
+      <!-- Messages Stream -->
+      <div id="chat-modal-messages" class="chat-messages-container" style="flex: 1; overflow-y: auto; padding: 1rem 0; display: flex; flex-direction: column; gap: 0.75rem;"></div>
+
+      <!-- Quick Icebreaker suggestion -->
+      <div style="padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: space-between;">
+        <span>💡 Tip: Ask about their startup or meet at the coffee break!</span>
+        <button type="button" class="auth-blue-link" onclick="document.getElementById('chat-message-input').value='Hey! Are you heading to the coffee break at 10:45 AM?';" style="font-size: 0.72rem;">Use prompt</button>
+      </div>
+
+      <!-- Chat Input Form -->
+      <form onsubmit="gathrRadar.sendChatMessage(event)" style="display: flex; gap: 0.5rem;">
+        <input 
+          type="text" 
+          id="chat-message-input" 
+          class="search-input" 
+          style="padding-left: 1rem; flex: 1;" 
+          placeholder="Type a message or say hello..."
+          autocomplete="off"
+        >
+        <button type="submit" class="btn btn-primary btn-sm" style="padding: 0 1.25rem;">
+          Send
+        </button>
+      </form>
     </div>
   </div>
 

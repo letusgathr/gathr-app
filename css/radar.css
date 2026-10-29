@@ -275,3 +275,224 @@
   border-color: var(--brand-orange);
 }
 
+/* ==========================================================================
+   ATTENDEE NETWORKING & EVENT COMMUNITY STYLES
+   ========================================================================== */
+
+/* Overlapping Avatar Stacks */
+.avatar-stack {
+  display: inline-flex;
+  align-items: center;
+}
+
+.avatar-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand-orange) 0%, var(--brand-amber) 100%);
+  color: #000;
+  font-weight: 800;
+  font-size: 0.68rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-card);
+  margin-left: -8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.avatar-circle:first-child {
+  margin-left: 0;
+}
+
+/* Social Proof Bar on Event Cards in Explore View */
+.event-card-attendees-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin: 0.6rem 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.event-card-attendees-bar:hover {
+  background: rgba(255, 85, 0, 0.12);
+  border-color: rgba(255, 85, 0, 0.3);
+}
+
+.attendees-bar-text {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.attendees-bar-text strong {
+  color: #FFF;
+}
+
+/* Community Section on Digital Pass */
+.pass-attendee-network-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 85, 0, 0.25);
+  border-radius: var(--radius-xl);
+  padding: 2.25rem 2rem;
+  margin-top: 2.5rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  text-align: left;
+}
+
+.pass-attendees-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+/* Friend & Verification Badges */
+.friend-badge {
+  background: rgba(0, 230, 118, 0.15);
+  color: #00E676;
+  border: 1px solid rgba(0, 230, 118, 0.3);
+  font-size: 0.68rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.vip-badge {
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  font-size: 0.68rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
+/* Event Selector in Radar View */
+.radar-event-selector-wrap {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.radar-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  max-width: 360px;
+}
+
+.radar-search-input {
+  background: transparent;
+  border: none;
+  color: #FFF;
+  font-size: 0.85rem;
+  outline: none;
+  width: 100%;
+}
+
+.radar-search-input::placeholder {
+  color: var(--text-dim);
+}
+
+/* Direct Chat Modal */
+.attendee-chat-modal-card {
+  background: #12131C;
+  border: 1px solid rgba(255, 85, 0, 0.3);
+  border-radius: 20px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  animation: modalScaleIn 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+
+.chat-header {
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-messages-container {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 220px;
+  max-height: 340px;
+}
+
+.chat-msg-bubble {
+  max-width: 82%;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.chat-msg-incoming {
+  background: rgba(255, 255, 255, 0.07);
+  color: #FFF;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-msg-outgoing {
+  background: var(--brand-orange);
+  color: #FFF;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-input-bar {
+  padding: 0.85rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.chat-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.55rem 1rem;
+  color: #FFF;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.chat-input:focus {
+  border-color: var(--brand-orange);
+}
+
+
