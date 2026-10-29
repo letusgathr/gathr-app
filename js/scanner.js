@@ -226,6 +226,7 @@ class GateScanner {
       const prior = this.checkedInMap.get(ticketCode);
       overlay.classList.add('state-duplicate');
       this.playDuplicateSound();
+      if (window.gathrNativeBridge) window.gathrNativeBridge.triggerScanHaptic(false);
       
       titleEl.innerText = "ALREADY CHECKED IN";
       subtitleEl.innerHTML = `<strong>${prior.name}</strong> (${prior.tier})<br>First scanned at <strong>${prior.checkInTime}</strong> via <strong>${prior.gate}</strong>. Duplicate entry denied.`;
@@ -237,6 +238,7 @@ class GateScanner {
     if (!ticketCode.startsWith("GTHR-")) {
       overlay.classList.add('state-invalid');
       this.playInvalidSound();
+      if (window.gathrNativeBridge) window.gathrNativeBridge.triggerScanHaptic(false);
 
       titleEl.innerText = "INVALID TICKET CODE";
       subtitleEl.innerHTML = `Unrecognized signature: <code>${ticketCode}</code>.<br>This QR pass is either forged or corrupted.`;
@@ -261,6 +263,7 @@ class GateScanner {
     this.totalScans++;
     this.updateHudCounts();
     this.playSuccessSound();
+    if (window.gathrNativeBridge) window.gathrNativeBridge.triggerScanHaptic(true);
 
     overlay.classList.add('state-valid');
     titleEl.innerText = "TICKET VALID — ENTRY APPROVED";

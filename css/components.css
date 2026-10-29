@@ -1146,3 +1146,26 @@ body.role-organizer .organizer-nav-item {
   align-items: center;
 }
 
+/* ========================================================
+   NATIVE MOBILE APP SAFE-AREA INSETS (CAPACITOR IOS & ANDROID)
+   Protects against notch, dynamic island & android system gesture bars
+   ======================================================== */
+body.gathr-native-mobile {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+body.gathr-native-mobile .navbar {
+  padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
+}
+
+body.gathr-native-mobile input,
+body.gathr-native-mobile textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+

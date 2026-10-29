@@ -19,6 +19,22 @@ files_to_add = [
     'js/radar.js',
     'js/app.js',
     'js/auth.js',
+    'js/scanner.js',
+    'js/capacitor-bridge.js',
+    'capacitor.config.json',
+    'package.json',
+    'android/build.gradle',
+    'android/settings.gradle',
+    'android/variables.gradle',
+    'android/app/build.gradle',
+    'android/app/src/main/AndroidManifest.xml',
+    'android/app/src/main/java/online/letusgather/app/MainActivity.java',
+    'android/app/src/main/res/values/strings.xml',
+    'android/app/src/main/res/values/styles.xml',
+    'android/app/src/main/res/xml/file_paths.xml',
+    'ios/App/Podfile',
+    'ios/App/App/Info.plist',
+    'ios/App/App/AppDelegate.swift',
     'api_server.py',
     'api/index.py',
     'vercel.json',
@@ -39,11 +55,12 @@ for f in files_to_add:
 
 print("\n2. Creating clean Git commit...")
 commit_msg = (
-    "feat(nav): add responsive mobile hamburger menu and slide-out navigation drawer\n\n"
-    "- Add animated mobile hamburger button on screens <= 1024px\n"
-    "- Add glassmorphic slide-out navigation drawer for mobile/tablet screens\n"
-    "- Preserve clean horizontal CTA buttons on desktop screens\n"
-    "- Integrate drawer authentication status and currency selector sync\n"
+    "feat(mobile): build Capacitor native iOS & Android mobile application architecture\n\n"
+    "- Add capacitor.config.json and package.json with Capacitor 6 native plugins\n"
+    "- Add js/capacitor-bridge.js for hardware status bar, splash screen, and tactile haptic scan feedback\n"
+    "- Scaffold native Android Gradle project with Camera, Vibrate, and deep linking permissions\n"
+    "- Scaffold native iOS project with Camera/Photo usage descriptions and AppDelegate\n"
+    "- Add native mobile safe-area insets in css/components.css\n"
 ).encode('utf-8')
 
 try:

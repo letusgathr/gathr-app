@@ -51,6 +51,11 @@ class GathrApp {
       window.gathrOrganizer.init();
     }
 
+    // Initialize Native Mobile Bridge (Capacitor iOS & Android)
+    if (window.gathrNativeBridge) {
+      window.gathrNativeBridge.init();
+    }
+
     // Initialize Mobile Drawer Auth & Escape Key Listener
     this.renderMobileDrawerAuth();
     document.addEventListener('keydown', (e) => {
