@@ -559,6 +559,9 @@ class GathrRequestHandler(http.server.SimpleHTTPRequestHandler):
 
         return self._send_json(404, {'error': 'Endpoint not found'})
 
+# Vercel Serverless Function handler
+handler = GathrRequestHandler
+
 def run_server():
     init_db()
     socketserver.TCPServer.allow_reuse_address = True

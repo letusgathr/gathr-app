@@ -20,6 +20,8 @@ files_to_add = [
     'js/app.js',
     'js/auth.js',
     'api_server.py',
+    'api/index.py',
+    'vercel.json',
     'db/database.py',
     'tests/test_api.py',
     'README.md',
@@ -37,13 +39,10 @@ for f in files_to_add:
 
 print("\n2. Creating clean Git commit...")
 commit_msg = (
-    "feat: Vetted vendor enlisting & sourcing, 3-milestone escrow, event coordination suite, and attendee networking\n\n"
-    "- Add verified vendor onboarding wizard with CAC registration, service categories, and verified partner badge\n"
-    "- Build vendor sourcing marketplace with live search, operating hub filtering, and direct WhatsApp channel\n"
-    "- Implement Task Assignment & Quote Request (RFP) with 3-milestone GATHR Trust Escrow (50% deposit, 25% soundcheck, 25% final wrap)\n"
-    "- Deliver comprehensive Event Planning & Coordination suite with 4-phase interactive task board, progress tracker, and printable crew manifest\n"
-    "- Enhance Attendee Networking (GATHR Radar) with event community directory, Who's Going digital pass card, and 1-on-1 direct chat\n"
-    "- Provide full ACID REST backend endpoints and pass 14 automated integration tests\n"
+    "ci(vercel): configure Vercel serverless function entrypoint and edge routing\n\n"
+    "- Add api/index.py Vercel serverless function entrypoint\n"
+    "- Expose handler = GathrRequestHandler in api_server.py\n"
+    "- Update vercel.json rewrites for /api/* and /health to /api/index.py\n"
 ).encode('utf-8')
 
 try:

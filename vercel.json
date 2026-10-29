@@ -1,8 +1,8 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api_server.py" },
-    { "source": "/health", "destination": "/api_server.py" },
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/health", "destination": "/api/index.py" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
