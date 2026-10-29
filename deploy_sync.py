@@ -9,9 +9,6 @@ import dulwich.porcelain
 repo_path = os.path.dirname(os.path.abspath(__file__))
 repo = dulwich.porcelain.open_repo(repo_path)
 
-# Reset main branch pointer back to remote clean commit before rejected push
-clean_parent = b"21aa279d6e7016f7ecd79529775a3c088bbfc6c3"
-repo.refs[b"refs/heads/main"] = clean_parent
 
 files_to_add = [
     'index.html',
