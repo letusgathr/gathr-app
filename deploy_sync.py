@@ -39,8 +39,8 @@ for f in files_to_add:
 
 print("\n2. Creating clean Git commit...")
 commit_msg = (
-    "fix(ui): update section tagline to GATHR Event Operating System\n\n"
-    "- Change 'Phase 2: Event Operating System' to 'GATHR Event Operating System' in index.html\n"
+    "fix(auth): capitalize gathr to GATHR in sign-in feature modal header\n\n"
+    "- Update auth brand name to uppercase GATHR in index.html and components.css\n"
 ).encode('utf-8')
 
 try:
